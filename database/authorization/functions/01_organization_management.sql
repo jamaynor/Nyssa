@@ -11,7 +11,7 @@ SET search_path TO authorization, public;
 -- Function: create_organization
 -- Description: Creates a new organization with automatic LTREE path generation
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.create_organization(
+CREATE OR REPLACE FUNCTION authz.create_organization(
 	p_name					VARCHAR(255),
 	p_display_name			VARCHAR(255) DEFAULT NULL,
 	p_description			TEXT DEFAULT NULL,
@@ -40,7 +40,7 @@ BEGIN
 	-- Get parent path or create root path
 	IF p_parent_id IS NOT NULL THEN
 		SELECT o.path INTO parent_path
-		FROM authorization.organizations o
+		FROM authz.organizations o
 		WHERE o.id = p_parent_id AND o.is_active = true;
 		
 		IF parent_path IS NULL THEN
@@ -55,19 +55,19 @@ BEGIN
 	END IF;
 	
 	-- Check for path uniqueness
-	IF EXISTS (SELECT 1 FROM authorization.organizations WHERE path = new_path) THEN
+	IF EXISTS (SELECT 1 FROM authz.organizations WHERE path = new_path) THEN
 		RAISE EXCEPTION 'Organization path already exists: %', new_path;
 	END IF;
 	
 	-- Insert new organization
-	INSERT INTO authorization.organizations (
+	INSERT INTO authz.organizations (
 		id, name, display_name, description, parent_id, path, created_by, metadata
 	) VALUES (
 		new_org_id, p_name, p_display_name, p_description, p_parent_id, new_path, p_created_by, p_metadata
 	);
 	
 	-- Log creation event
-	PERFORM authorization.log_audit_event(
+	PERFORM authz.log_audit_event(
 		'ORGANIZATION_CREATED',
 		'ADMINISTRATION',
 		p_created_by,
@@ -89,7 +89,7 @@ $$ LANGUAGE plpgsql;
 -- Function: move_organization
 -- Description: Moves an organization to a new parent, updating all descendants
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.move_organization(
+CREATE OR REPLACE FUNCTION authz.move_organization(
 	p_org_id				UUID,
 	p_new_parent_id			UUID,
 	p_moved_by				UUID
@@ -105,7 +105,7 @@ DECLARE
 BEGIN
 	-- Get current organization path and name
 	SELECT path, name INTO old_path, org_name
-	FROM authorization.organizations
+	FROM authz.organizations
 	WHERE id = p_org_id AND is_active = true;
 	
 	IF old_path IS NULL THEN
@@ -118,7 +118,7 @@ BEGIN
 	-- Get new parent path
 	IF p_new_parent_id IS NOT NULL THEN
 		SELECT path INTO new_parent_path
-		FROM authorization.organizations
+		FROM authz.organizations
 		WHERE id = p_new_parent_id AND is_active = true;
 		
 		IF new_parent_path IS NULL THEN
@@ -137,7 +137,7 @@ BEGIN
 	END IF;
 	
 	-- Update the organization and all its descendants
-	UPDATE authorization.organizations
+	UPDATE authz.organizations
 	SET 
 		path = new_path || subpath(path, nlevel(old_path)),
 		parent_id = CASE WHEN id = p_org_id THEN p_new_parent_id ELSE parent_id END,
@@ -148,7 +148,7 @@ BEGIN
 	GET DIAGNOSTICS update_count = ROW_COUNT;
 	
 	-- Log move event
-	PERFORM authorization.log_audit_event(
+	PERFORM authz.log_audit_event(
 		'ORGANIZATION_MOVED',
 		'ADMINISTRATION',
 		p_moved_by,
@@ -173,7 +173,7 @@ $$ LANGUAGE plpgsql;
 -- Function: get_organization_hierarchy
 -- Description: Returns organization hierarchy with user access information
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_organization_hierarchy(
+CREATE OR REPLACE FUNCTION authz.get_organization_hierarchy(
 	p_user_id				UUID DEFAULT NULL,
 	p_root_org_id			UUID DEFAULT NULL,
 	p_max_depth				INTEGER DEFAULT NULL,
@@ -197,7 +197,7 @@ BEGIN
 	-- Get root path if specified
 	IF p_root_org_id IS NOT NULL THEN
 		SELECT o.path INTO root_path
-		FROM authorization.organizations o
+		FROM authz.organizations o
 		WHERE o.id = p_root_org_id
 			AND (o.is_active = true OR p_include_inactive = true);
 		
@@ -216,22 +216,22 @@ BEGIN
 		o.parent_id,
 		CASE 
 			WHEN p_user_id IS NULL THEN true
-			ELSE authorization.user_has_organization_access(p_user_id, o.id)
+			ELSE authz.user_has_organization_access(p_user_id, o.id)
 		END as has_access,
-		(SELECT COUNT(*) FROM authorization.organization_memberships om 
+		(SELECT COUNT(*) FROM authz.organization_memberships om 
 			WHERE om.organization_id = o.id AND om.status = 'active') as member_count,
-		(SELECT COUNT(*) FROM authorization.roles r 
+		(SELECT COUNT(*) FROM authz.roles r 
 			WHERE r.organization_id = o.id AND r.is_active = true) as role_count,
 		CASE 
 			WHEN p_user_id IS NULL THEN false
 			ELSE EXISTS(
-				SELECT 1 FROM authorization.organization_memberships om
+				SELECT 1 FROM authz.organization_memberships om
 				WHERE om.user_id = p_user_id 
 					AND om.organization_id = o.id 
 					AND om.status = 'active'
 			)
 		END as is_direct_member
-	FROM authorization.organizations o
+	FROM authz.organizations o
 	WHERE (o.is_active = true OR p_include_inactive = true)
 		AND (root_path IS NULL OR o.path <@ root_path)
 		AND (p_max_depth IS NULL OR nlevel(o.path) <= nlevel(COALESCE(root_path, ''::ltree)) + p_max_depth)
@@ -243,7 +243,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: user_has_organization_access
 -- Description: Checks if user has access to organization (direct or inherited)
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.user_has_organization_access(
+CREATE OR REPLACE FUNCTION authz.user_has_organization_access(
 	p_user_id				UUID,
 	p_org_id				UUID
 )
@@ -253,7 +253,7 @@ DECLARE
 BEGIN
 	-- Get organization path
 	SELECT path INTO org_path
-	FROM authorization.organizations
+	FROM authz.organizations
 	WHERE id = p_org_id AND is_active = true;
 	
 	IF org_path IS NULL THEN
@@ -262,13 +262,13 @@ BEGIN
 	
 	-- Check for direct membership or role assignment
 	RETURN EXISTS(
-		SELECT 1 FROM authorization.organization_memberships om
+		SELECT 1 FROM authz.organization_memberships om
 		WHERE om.user_id = p_user_id 
 			AND om.organization_id = p_org_id 
 			AND om.status = 'active'
 	) OR EXISTS(
-		SELECT 1 FROM authorization.user_roles ur
-		JOIN authorization.organizations o ON ur.organization_id = o.id
+		SELECT 1 FROM authz.user_roles ur
+		JOIN authz.organizations o ON ur.organization_id = o.id
 		WHERE ur.user_id = p_user_id
 			AND ur.is_active = true
 			AND (ur.expires_at IS NULL OR ur.expires_at > CURRENT_TIMESTAMP)
@@ -281,7 +281,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: get_user_organizations
 -- Description: Returns all organizations a user has access to
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_user_organizations(
+CREATE OR REPLACE FUNCTION authz.get_user_organizations(
 	p_user_id				UUID,
 	p_include_inherited		BOOLEAN DEFAULT true
 )
@@ -304,12 +304,12 @@ BEGIN
 		o.path,
 		'direct'::VARCHAR as access_type,
 		om.membership_type,
-		(SELECT COUNT(*) FROM authorization.user_roles ur 
+		(SELECT COUNT(*) FROM authz.user_roles ur 
 			WHERE ur.user_id = p_user_id 
 			AND ur.organization_id = o.id 
 			AND ur.is_active = true) as role_count
-	FROM authorization.organizations o
-	JOIN authorization.organization_memberships om ON o.id = om.organization_id
+	FROM authz.organizations o
+	JOIN authz.organization_memberships om ON o.id = om.organization_id
 	WHERE om.user_id = p_user_id
 		AND om.status = 'active'
 		AND o.is_active = true;
@@ -325,13 +325,13 @@ BEGIN
 			'inherited'::VARCHAR as access_type,
 			NULL::VARCHAR as membership_type,
 			0::BIGINT as role_count
-		FROM authorization.organizations o
+		FROM authz.organizations o
 		WHERE o.is_active = true
 			AND EXISTS (
 				SELECT 1 
-				FROM authorization.user_roles ur
-				JOIN authorization.roles r ON ur.role_id = r.id
-				JOIN authorization.organizations parent_org ON ur.organization_id = parent_org.id
+				FROM authz.user_roles ur
+				JOIN authz.roles r ON ur.role_id = r.id
+				JOIN authz.organizations parent_org ON ur.organization_id = parent_org.id
 				WHERE ur.user_id = p_user_id
 					AND ur.is_active = true
 					AND r.is_inheritable = true
@@ -342,7 +342,7 @@ BEGIN
 			AND NOT EXISTS (
 				-- Exclude if user already has direct membership
 				SELECT 1 
-				FROM authorization.organization_memberships om2
+				FROM authz.organization_memberships om2
 				WHERE om2.user_id = p_user_id
 					AND om2.organization_id = o.id
 					AND om2.status = 'active'
@@ -352,8 +352,8 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- Comments
-COMMENT ON FUNCTION authorization.create_organization IS 'Creates a new organization with automatic LTREE path generation';
-COMMENT ON FUNCTION authorization.move_organization IS 'Moves an organization to a new parent, updating all descendant paths';
-COMMENT ON FUNCTION authorization.get_organization_hierarchy IS 'Returns organization hierarchy tree with access and membership information';
-COMMENT ON FUNCTION authorization.user_has_organization_access IS 'Checks if user has access to an organization through membership or inherited roles';
-COMMENT ON FUNCTION authorization.get_user_organizations IS 'Returns all organizations a user has access to, either directly or through inheritance';
+COMMENT ON FUNCTION authz.create_organization IS 'Creates a new organization with automatic LTREE path generation';
+COMMENT ON FUNCTION authz.move_organization IS 'Moves an organization to a new parent, updating all descendant paths';
+COMMENT ON FUNCTION authz.get_organization_hierarchy IS 'Returns organization hierarchy tree with access and membership information';
+COMMENT ON FUNCTION authz.user_has_organization_access IS 'Checks if user has access to an organization through membership or inherited roles';
+COMMENT ON FUNCTION authz.get_user_organizations IS 'Returns all organizations a user has access to, either directly or through inheritance';

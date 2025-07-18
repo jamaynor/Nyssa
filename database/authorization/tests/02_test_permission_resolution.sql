@@ -5,10 +5,10 @@
 -- Created: January 2024
 -- ============================================================================
 
-SET search_path TO authorization, public;
+SET search_path TO authz, public;
 
 -- Enable detailed error messages
-\set VERBOSITY verbose
+-- \set VERBOSITY verbose
 
 -- ============================================================================
 -- Test Helper Functions
@@ -33,39 +33,39 @@ DECLARE
 	v_perm_write_id		UUID;
 BEGIN
 	-- Create test user
-	INSERT INTO authorization.users (email, first_name, last_name, metadata)
+	INSERT INTO authz.users (email, first_name, last_name, metadata)
 	VALUES ('perm_test@example.com', 'Permission', 'Tester', '{"test_context": true}')
 	RETURNING id INTO v_test_user_id;
 	
 	-- Create parent and child organizations
-	INSERT INTO authorization.organizations (name, display_name, path, metadata)
+	INSERT INTO authz.organizations (name, display_name, path, metadata)
 	VALUES ('PermTestCorp', 'Permission Test Corp', 'permtestcorp', '{"test_context": true}')
 	RETURNING id INTO v_parent_org_id;
 	
-	INSERT INTO authorization.organizations (name, display_name, parent_id, path, metadata)
+	INSERT INTO authz.organizations (name, display_name, parent_id, path, metadata)
 	VALUES ('PermTestDept', 'Permission Test Dept', v_parent_org_id, 'permtestcorp.permtestdept', '{"test_context": true}')
 	RETURNING id INTO v_child_org_id;
 	
 	-- Create permissions
-	INSERT INTO authorization.permissions (permission, display_name, category, metadata)
+	INSERT INTO authz.permissions (permission, display_name, category, metadata)
 	VALUES ('test:read', 'Test Read Permission', 'table', '{"test_context": true}')
 	RETURNING id INTO v_perm_read_id;
 	
-	INSERT INTO authorization.permissions (permission, display_name, category, metadata)
+	INSERT INTO authz.permissions (permission, display_name, category, metadata)
 	VALUES ('test:write', 'Test Write Permission', 'table', '{"test_context": true}')
 	RETURNING id INTO v_perm_write_id;
 	
 	-- Create roles
-	INSERT INTO authorization.roles (organization_id, name, display_name, is_inheritable, priority, metadata)
+	INSERT INTO authz.roles (organization_id, name, display_name, is_inheritable, priority, metadata)
 	VALUES (v_parent_org_id, 'parent_admin', 'Parent Admin', true, 100, '{"test_context": true}')
 	RETURNING id INTO v_parent_role_id;
 	
-	INSERT INTO authorization.roles (organization_id, name, display_name, is_inheritable, priority, metadata)
+	INSERT INTO authz.roles (organization_id, name, display_name, is_inheritable, priority, metadata)
 	VALUES (v_child_org_id, 'child_user', 'Child User', false, 50, '{"test_context": true}')
 	RETURNING id INTO v_child_role_id;
 	
 	-- Add user to organizations
-	INSERT INTO authorization.organization_memberships (user_id, organization_id, metadata)
+	INSERT INTO authz.organization_memberships (user_id, organization_id, metadata)
 	VALUES 
 		(v_test_user_id, v_parent_org_id, '{"test_context": true}'),
 		(v_test_user_id, v_child_org_id, '{"test_context": true}');
@@ -94,21 +94,21 @@ BEGIN
 	RAISE NOTICE 'TEST: Resolve User Permissions - Starting';
 	
 	-- Setup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	SELECT * INTO test_data FROM test.setup_permission_test_data();
 	
 	-- Test 1: No permissions without role assignment
 	BEGIN
 		SELECT COUNT(*) INTO perm_count
-		FROM authorization.resolve_user_permissions(
+		FROM authz.resolve_user_permissions(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			true,
@@ -126,15 +126,15 @@ BEGIN
 	-- Test 2: Direct permissions in organization
 	BEGIN
 		-- Assign role and permissions
-		INSERT INTO authorization.role_permissions (role_id, permission_id, metadata)
+		INSERT INTO authz.role_permissions (role_id, permission_id, metadata)
 		VALUES (test_data.child_role_id, test_data.perm_read_id, '{"test_context": true}');
 		
-		INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+		INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 		VALUES (test_data.test_user_id, test_data.child_role_id, test_data.child_org_id, 
 			test_data.test_user_id, '{"test_context": true}');
 		
 		SELECT * INTO perm_record
-		FROM authorization.resolve_user_permissions(
+		FROM authz.resolve_user_permissions(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			true,
@@ -154,15 +154,15 @@ BEGIN
 	-- Test 3: Inherited permissions from parent
 	BEGIN
 		-- Add inheritable role in parent org
-		INSERT INTO authorization.role_permissions (role_id, permission_id, metadata)
+		INSERT INTO authz.role_permissions (role_id, permission_id, metadata)
 		VALUES (test_data.parent_role_id, test_data.perm_write_id, '{"test_context": true}');
 		
-		INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+		INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 		VALUES (test_data.test_user_id, test_data.parent_role_id, test_data.parent_org_id,
 			test_data.test_user_id, '{"test_context": true}');
 		
 		SELECT COUNT(*) INTO perm_count
-		FROM authorization.resolve_user_permissions(
+		FROM authz.resolve_user_permissions(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			true,  -- Include inherited
@@ -181,7 +181,7 @@ BEGIN
 	-- Test 4: Permission filtering
 	BEGIN
 		SELECT COUNT(*) INTO perm_count
-		FROM authorization.resolve_user_permissions(
+		FROM authz.resolve_user_permissions(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			true,
@@ -197,14 +197,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Resolve User Permissions';
@@ -230,7 +230,7 @@ BEGIN
 	-- Test 1: Permission denied without role
 	BEGIN
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			'test:read',
@@ -249,15 +249,15 @@ BEGIN
 	-- Test 2: Direct permission allowed
 	BEGIN
 		-- Grant permission
-		INSERT INTO authorization.role_permissions (role_id, permission_id, metadata)
+		INSERT INTO authz.role_permissions (role_id, permission_id, metadata)
 		VALUES (test_data.child_role_id, test_data.perm_read_id, '{"test_context": true}');
 		
-		INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+		INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 		VALUES (test_data.test_user_id, test_data.child_role_id, test_data.child_org_id,
 			test_data.test_user_id, '{"test_context": true}');
 		
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			'test:read',
@@ -276,13 +276,13 @@ BEGIN
 	-- Test 3: Expired permission denied
 	BEGIN
 		-- Update role to expired
-		UPDATE authorization.user_roles 
+		UPDATE authz.user_roles 
 		SET expires_at = CURRENT_TIMESTAMP - INTERVAL '1 hour'
 		WHERE user_id = test_data.test_user_id 
 			AND role_id = test_data.child_role_id;
 		
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			'test:read',
@@ -300,18 +300,18 @@ BEGIN
 	-- Test 4: Inactive organization denies access
 	BEGIN
 		-- Reactivate role
-		UPDATE authorization.user_roles 
+		UPDATE authz.user_roles 
 		SET expires_at = NULL
 		WHERE user_id = test_data.test_user_id 
 			AND role_id = test_data.child_role_id;
 		
 		-- Deactivate organization
-		UPDATE authorization.organizations 
+		UPDATE authz.organizations 
 		SET is_active = false 
 		WHERE id = test_data.child_org_id;
 		
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			'test:read',
@@ -328,14 +328,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Check User Permission';
@@ -361,19 +361,19 @@ BEGIN
 	SELECT * INTO test_data FROM test.setup_permission_test_data();
 	
 	-- Create additional permissions
-	INSERT INTO authorization.permissions (permission, display_name, category, metadata)
+	INSERT INTO authz.permissions (permission, display_name, category, metadata)
 	VALUES 
 		('test:delete', 'Test Delete Permission', 'table', '{"test_context": true}'),
 		('test:admin', 'Test Admin Permission', 'table', '{"test_context": true}');
 	
 	-- Grant some permissions
-	INSERT INTO authorization.role_permissions (role_id, permission_id, metadata)
+	INSERT INTO authz.role_permissions (role_id, permission_id, metadata)
 	SELECT test_data.child_role_id, id, '{"test_context": true}'
-	FROM authorization.permissions
+	FROM authz.permissions
 	WHERE permission IN ('test:read', 'test:write')
 		AND metadata->>'test_context' = 'true';
 	
-	INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+	INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 	VALUES (test_data.test_user_id, test_data.child_role_id, test_data.child_org_id,
 		test_data.test_user_id, '{"test_context": true}');
 	
@@ -383,7 +383,7 @@ BEGIN
 			COUNT(*) FILTER (WHERE allowed = true) as allowed,
 			COUNT(*) FILTER (WHERE allowed = false) as denied
 		INTO allowed_count, denied_count
-		FROM authorization.check_user_permissions_bulk(
+		FROM authz.check_user_permissions_bulk(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			ARRAY['test:read', 'test:write', 'test:delete', 'test:admin'],
@@ -402,7 +402,7 @@ BEGIN
 	-- Test 2: Verify specific permission results
 	BEGIN
 		SELECT * INTO perm_results
-		FROM authorization.check_user_permissions_bulk(
+		FROM authz.check_user_permissions_bulk(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			ARRAY['test:read', 'test:admin'],
@@ -414,7 +414,7 @@ BEGIN
 		ASSERT perm_results.source = 'direct', 'Read should be direct';
 		
 		SELECT * INTO perm_results
-		FROM authorization.check_user_permissions_bulk(
+		FROM authz.check_user_permissions_bulk(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			ARRAY['test:read', 'test:admin'],
@@ -434,7 +434,7 @@ BEGIN
 	-- Test 3: Empty permission array
 	BEGIN
 		SELECT COUNT(*) INTO allowed_count
-		FROM authorization.check_user_permissions_bulk(
+		FROM authz.check_user_permissions_bulk(
 			test_data.test_user_id,
 			test_data.child_org_id,
 			ARRAY[]::VARCHAR[],
@@ -450,14 +450,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Bulk Permission Check';
@@ -482,27 +482,27 @@ BEGIN
 	-- Setup with additional grandchild org
 	SELECT * INTO test_data FROM test.setup_permission_test_data();
 	
-	INSERT INTO authorization.organizations (name, display_name, parent_id, path, metadata)
+	INSERT INTO authz.organizations (name, display_name, parent_id, path, metadata)
 	VALUES ('GrandchildDept', 'Grandchild Dept', test_data.child_org_id, 
 		'permtestcorp.permtestdept.grandchilddept', '{"test_context": true}')
 	RETURNING id INTO grandchild_org_id;
 	
-	INSERT INTO authorization.organization_memberships (user_id, organization_id, metadata)
+	INSERT INTO authz.organization_memberships (user_id, organization_id, metadata)
 	VALUES (test_data.test_user_id, grandchild_org_id, '{"test_context": true}');
 	
 	-- Test 1: Inheritable role permissions cascade down
 	BEGIN
 		-- Grant inheritable role at parent
-		INSERT INTO authorization.role_permissions (role_id, permission_id, metadata)
+		INSERT INTO authz.role_permissions (role_id, permission_id, metadata)
 		VALUES (test_data.parent_role_id, test_data.perm_write_id, '{"test_context": true}');
 		
-		INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+		INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 		VALUES (test_data.test_user_id, test_data.parent_role_id, test_data.parent_org_id,
 			test_data.test_user_id, '{"test_context": true}');
 		
 		-- Check permission at grandchild level
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			grandchild_org_id,
 			'test:write',
@@ -521,13 +521,13 @@ BEGIN
 	-- Test 2: Non-inheritable role doesn't cascade
 	BEGIN
 		-- Make role non-inheritable
-		UPDATE authorization.roles 
+		UPDATE authz.roles 
 		SET is_inheritable = false 
 		WHERE id = test_data.parent_role_id;
 		
 		-- Check permission again
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			grandchild_org_id,
 			'test:write',
@@ -545,25 +545,25 @@ BEGIN
 	-- Test 3: Direct permission overrides inheritance
 	BEGIN
 		-- Add direct conflicting permission
-		INSERT INTO authorization.role_permissions (role_id, permission_id, metadata)
+		INSERT INTO authz.role_permissions (role_id, permission_id, metadata)
 		VALUES (test_data.child_role_id, test_data.perm_write_id, '{"test_context": true}');
 		
-		INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+		INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 		VALUES (test_data.test_user_id, test_data.child_role_id, grandchild_org_id,
 			test_data.test_user_id, '{"test_context": true}');
 		
 		-- Make parent role inheritable again
-		UPDATE authorization.roles 
+		UPDATE authz.roles 
 		SET is_inheritable = true, priority = 50
 		WHERE id = test_data.parent_role_id;
 		
 		-- Make child role higher priority
-		UPDATE authorization.roles 
+		UPDATE authz.roles 
 		SET priority = 100
 		WHERE id = test_data.child_role_id;
 		
 		SELECT * INTO perm_check
-		FROM authorization.check_user_permission(
+		FROM authz.check_user_permission(
 			test_data.test_user_id,
 			grandchild_org_id,
 			'test:write',
@@ -580,14 +580,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Permission Inheritance';

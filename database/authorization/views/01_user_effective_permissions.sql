@@ -8,13 +8,13 @@
 SET search_path TO authorization, public;
 
 -- Drop existing view if needed (for clean installs)
--- DROP MATERIALIZED VIEW IF EXISTS authorization.user_effective_permissions CASCADE;
+-- DROP MATERIALIZED VIEW IF EXISTS auth.user_effective_permissions CASCADE;
 
 -- ============================================================================
 -- Materialized View: user_effective_permissions
 -- Description: Pre-computed view of all user permissions for performance
 -- ============================================================================
-CREATE MATERIALIZED VIEW authorization.user_effective_permissions AS
+CREATE MATERIALIZED VIEW authz.user_effective_permissions AS
 SELECT 
 	ur.user_id,
 	ur.organization_id,
@@ -32,11 +32,11 @@ SELECT
 	ur.granted_at,
 	ur.expires_at,
 	ur.conditions
-FROM authorization.user_roles ur
-JOIN authorization.roles r ON ur.role_id = r.id
-JOIN authorization.role_permissions rp ON r.id = rp.role_id
-JOIN authorization.permissions p ON rp.permission_id = p.id
-JOIN authorization.organizations o ON ur.organization_id = o.id
+FROM authz.user_roles ur
+JOIN authz.roles r ON ur.role_id = r.id
+JOIN authz.role_permissions rp ON r.id = rp.role_id
+JOIN authz.permissions p ON rp.permission_id = p.id
+JOIN authz.organizations o ON ur.organization_id = o.id
 WHERE ur.is_active = true 
 	AND r.is_active = true
 	AND r.is_assignable = true
@@ -45,42 +45,42 @@ WHERE ur.is_active = true
 
 -- Indexes on materialized view for performance
 CREATE UNIQUE INDEX idx_user_perms_unique 
-	ON authorization.user_effective_permissions(user_id, organization_id, permission, role_id);
+	ON authz.user_effective_permissions(user_id, organization_id, permission, role_id);
 
 CREATE INDEX idx_user_perms_user_org 
-	ON authorization.user_effective_permissions(user_id, organization_id);
+	ON authz.user_effective_permissions(user_id, organization_id);
 
 CREATE INDEX idx_user_perms_permission 
-	ON authorization.user_effective_permissions(permission);
+	ON authz.user_effective_permissions(permission);
 
 CREATE INDEX idx_user_perms_resource 
-	ON authorization.user_effective_permissions(resource);
+	ON authz.user_effective_permissions(resource);
 
 CREATE INDEX idx_user_perms_category 
-	ON authorization.user_effective_permissions(permission_category);
+	ON authz.user_effective_permissions(permission_category);
 
 CREATE INDEX idx_user_perms_path 
-	ON authorization.user_effective_permissions USING GIST(org_path);
+	ON authz.user_effective_permissions USING GIST(org_path);
 
 CREATE INDEX idx_user_perms_inheritable 
-	ON authorization.user_effective_permissions(is_inheritable) 
+	ON authz.user_effective_permissions(is_inheritable) 
 	WHERE is_inheritable = true;
 
 CREATE INDEX idx_user_perms_expires 
-	ON authorization.user_effective_permissions(expires_at) 
+	ON authz.user_effective_permissions(expires_at) 
 	WHERE expires_at IS NOT NULL;
 
 CREATE INDEX idx_user_perms_user_perm 
-	ON authorization.user_effective_permissions(user_id, permission);
+	ON authz.user_effective_permissions(user_id, permission);
 
 -- ============================================================================
 -- Function: refresh_user_permissions
 -- Description: Refreshes the materialized view (can be called manually or scheduled)
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.refresh_user_permissions()
+CREATE OR REPLACE FUNCTION authz.refresh_user_permissions()
 RETURNS VOID AS $$
 BEGIN
-	REFRESH MATERIALIZED VIEW CONCURRENTLY authorization.user_effective_permissions;
+	REFRESH MATERIALIZED VIEW CONCURRENTLY authz.user_effective_permissions;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -90,13 +90,13 @@ $$ LANGUAGE plpgsql;
 -- Note: PostgreSQL doesn't support partial materialized view refresh,
 --       so this logs the need for refresh and the app should handle caching
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.refresh_user_permissions_for_user(
+CREATE OR REPLACE FUNCTION authz.refresh_user_permissions_for_user(
 	p_user_id				UUID
 )
 RETURNS VOID AS $$
 BEGIN
 	-- Log that this user needs refresh
-	PERFORM authorization.log_audit_event(
+	PERFORM authz.log_audit_event(
 		'PERMISSION_REFRESH_REQUESTED',
 		'SYSTEM',
 		p_user_id,
@@ -120,7 +120,7 @@ $$ LANGUAGE plpgsql;
 -- Function: get_permission_stats
 -- Description: Returns statistics about the permission materialized view
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_permission_stats()
+CREATE OR REPLACE FUNCTION authz.get_permission_stats()
 RETURNS TABLE(
 	total_entries			BIGINT,
 	unique_users			BIGINT,
@@ -144,14 +144,14 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- Comments
-COMMENT ON MATERIALIZED VIEW authorization.user_effective_permissions IS 
+COMMENT ON MATERIALIZED VIEW authz.user_effective_permissions IS 
 	'Pre-computed view of all direct user permissions for performance optimization. Refreshed periodically.';
 
-COMMENT ON FUNCTION authorization.refresh_user_permissions IS 
+COMMENT ON FUNCTION authz.refresh_user_permissions IS 
 	'Performs a concurrent refresh of the user permissions materialized view';
 
-COMMENT ON FUNCTION authorization.refresh_user_permissions_for_user IS 
+COMMENT ON FUNCTION authz.refresh_user_permissions_for_user IS 
 	'Logs a request to refresh permissions for a specific user (actual refresh handled by application cache)';
 
-COMMENT ON FUNCTION authorization.get_permission_stats IS 
+COMMENT ON FUNCTION authz.get_permission_stats IS 
 	'Returns statistics about the permission materialized view for monitoring';

@@ -5,10 +5,10 @@
 -- Created: January 2024
 -- ============================================================================
 
-SET search_path TO authorization, public;
+SET search_path TO authz, public;
 
 -- Enable detailed error messages
-\set VERBOSITY verbose
+-- \set VERBOSITY verbose
 
 -- ============================================================================
 -- Test Helper Functions
@@ -35,45 +35,45 @@ DECLARE
 	v_perm2_id			UUID;
 BEGIN
 	-- Create users
-	INSERT INTO authorization.users (email, first_name, last_name, metadata)
+	INSERT INTO authz.users (email, first_name, last_name, metadata)
 	VALUES ('admin@roletest.com', 'Admin', 'User', '{"test_context": true}')
 	RETURNING id INTO v_admin_user_id;
 	
-	INSERT INTO authorization.users (email, first_name, last_name, metadata)
+	INSERT INTO authz.users (email, first_name, last_name, metadata)
 	VALUES ('user1@roletest.com', 'Test', 'User1', '{"test_context": true}')
 	RETURNING id INTO v_test_user1_id;
 	
-	INSERT INTO authorization.users (email, first_name, last_name, metadata)
+	INSERT INTO authz.users (email, first_name, last_name, metadata)
 	VALUES ('user2@roletest.com', 'Test', 'User2', '{"test_context": true}')
 	RETURNING id INTO v_test_user2_id;
 	
 	-- Create organization
-	INSERT INTO authorization.organizations (name, display_name, path, metadata)
+	INSERT INTO authz.organizations (name, display_name, path, metadata)
 	VALUES ('RoleTestOrg', 'Role Test Organization', 'roletestorg', '{"test_context": true}')
 	RETURNING id INTO v_org_id;
 	
 	-- Add users as members
-	INSERT INTO authorization.organization_memberships (user_id, organization_id, metadata)
+	INSERT INTO authz.organization_memberships (user_id, organization_id, metadata)
 	VALUES 
 		(v_admin_user_id, v_org_id, '{"test_context": true}'),
 		(v_test_user1_id, v_org_id, '{"test_context": true}'),
 		(v_test_user2_id, v_org_id, '{"test_context": true}');
 	
 	-- Create roles
-	INSERT INTO authorization.roles (organization_id, name, display_name, priority, metadata)
+	INSERT INTO authz.roles (organization_id, name, display_name, priority, metadata)
 	VALUES (v_org_id, 'test_admin', 'Test Admin', 100, '{"test_context": true}')
 	RETURNING id INTO v_role1_id;
 	
-	INSERT INTO authorization.roles (organization_id, name, display_name, priority, metadata)
+	INSERT INTO authz.roles (organization_id, name, display_name, priority, metadata)
 	VALUES (v_org_id, 'test_user', 'Test User', 50, '{"test_context": true}')
 	RETURNING id INTO v_role2_id;
 	
 	-- Create permissions
-	INSERT INTO authorization.permissions (permission, display_name, category, metadata)
+	INSERT INTO authz.permissions (permission, display_name, category, metadata)
 	VALUES ('roles:manage', 'Manage Roles', 'system', '{"test_context": true}')
 	RETURNING id INTO v_perm1_id;
 	
-	INSERT INTO authorization.permissions (permission, display_name, category, metadata)
+	INSERT INTO authz.permissions (permission, display_name, category, metadata)
 	VALUES ('users:view', 'View Users', 'table', '{"test_context": true}')
 	RETURNING id INTO v_perm2_id;
 	
@@ -101,21 +101,21 @@ BEGIN
 	RAISE NOTICE 'TEST: Assign User Role - Starting';
 	
 	-- Setup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	SELECT * INTO test_data FROM test.setup_role_test_data();
 	
 	-- Test 1: Successful role assignment
 	BEGIN
 		SELECT * INTO assignment_result
-		FROM authorization.assign_user_role(
+		FROM authz.assign_user_role(
 			test_data.test_user1_id,
 			test_data.role1_id,
 			test_data.org_id,
@@ -130,7 +130,7 @@ BEGIN
 		
 		-- Verify assignment exists
 		ASSERT EXISTS(
-			SELECT 1 FROM authorization.user_roles
+			SELECT 1 FROM authz.user_roles
 			WHERE id = assignment_result.assignment_id
 				AND user_id = test_data.test_user1_id
 				AND role_id = test_data.role1_id
@@ -146,7 +146,7 @@ BEGIN
 	-- Test 2: Duplicate assignment should fail
 	BEGIN
 		SELECT * INTO assignment_result
-		FROM authorization.assign_user_role(
+		FROM authz.assign_user_role(
 			test_data.test_user1_id,
 			test_data.role1_id,
 			test_data.org_id,
@@ -163,7 +163,7 @@ BEGIN
 	-- Test 3: Assignment with expiration
 	BEGIN
 		SELECT * INTO assignment_result
-		FROM authorization.assign_user_role(
+		FROM authz.assign_user_role(
 			test_data.test_user2_id,
 			test_data.role2_id,
 			test_data.org_id,
@@ -175,7 +175,7 @@ BEGIN
 		
 		-- Verify expiration is set
 		ASSERT EXISTS(
-			SELECT 1 FROM authorization.user_roles
+			SELECT 1 FROM authz.user_roles
 			WHERE id = assignment_result.assignment_id
 				AND expires_at IS NOT NULL
 				AND expires_at > CURRENT_TIMESTAMP
@@ -190,12 +190,12 @@ BEGIN
 	-- Test 4: Assignment to non-member should fail
 	BEGIN
 		-- Remove membership
-		DELETE FROM authorization.organization_memberships
+		DELETE FROM authz.organization_memberships
 		WHERE user_id = test_data.test_user1_id 
 			AND organization_id = test_data.org_id;
 		
 		SELECT * INTO assignment_result
-		FROM authorization.assign_user_role(
+		FROM authz.assign_user_role(
 			test_data.test_user1_id,
 			test_data.role2_id,
 			test_data.org_id,
@@ -212,7 +212,7 @@ BEGIN
 	-- Test 5: Assignment with past expiration should fail
 	BEGIN
 		SELECT * INTO assignment_result
-		FROM authorization.assign_user_role(
+		FROM authz.assign_user_role(
 			test_data.test_user2_id,
 			test_data.role1_id,
 			test_data.org_id,
@@ -229,14 +229,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Assign User Role';
@@ -262,7 +262,7 @@ BEGIN
 	
 	-- Assign role first
 	SELECT assignment_id INTO assignment_id
-	FROM authorization.assign_user_role(
+	FROM authz.assign_user_role(
 		test_data.test_user1_id,
 		test_data.role1_id,
 		test_data.org_id,
@@ -272,7 +272,7 @@ BEGIN
 	
 	-- Test 1: Successful revocation
 	BEGIN
-		revoke_result := authorization.revoke_user_role(
+		revoke_result := authz.revoke_user_role(
 			test_data.test_user1_id,
 			test_data.role1_id,
 			test_data.org_id,
@@ -284,7 +284,7 @@ BEGIN
 		
 		-- Verify assignment is inactive
 		ASSERT NOT EXISTS(
-			SELECT 1 FROM authorization.user_roles
+			SELECT 1 FROM authz.user_roles
 			WHERE user_id = test_data.test_user1_id
 				AND role_id = test_data.role1_id
 				AND organization_id = test_data.org_id
@@ -293,7 +293,7 @@ BEGIN
 		
 		-- Verify metadata contains revocation info
 		ASSERT EXISTS(
-			SELECT 1 FROM authorization.user_roles
+			SELECT 1 FROM authz.user_roles
 			WHERE id = assignment_id
 				AND metadata->>'revoked_by' IS NOT NULL
 				AND metadata->>'revocation_reason' = 'Testing revocation'
@@ -307,7 +307,7 @@ BEGIN
 	
 	-- Test 2: Revoke already revoked role should fail
 	BEGIN
-		revoke_result := authorization.revoke_user_role(
+		revoke_result := authz.revoke_user_role(
 			test_data.test_user1_id,
 			test_data.role1_id,
 			test_data.org_id,
@@ -323,7 +323,7 @@ BEGIN
 	
 	-- Test 3: Revoke non-existent assignment should fail
 	BEGIN
-		revoke_result := authorization.revoke_user_role(
+		revoke_result := authz.revoke_user_role(
 			test_data.test_user2_id,
 			test_data.role1_id,
 			test_data.org_id,
@@ -338,14 +338,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Revoke User Role';
@@ -371,36 +371,36 @@ BEGIN
 	SELECT * INTO test_data FROM test.setup_role_test_data();
 	
 	-- Create parent org
-	INSERT INTO authorization.organizations (name, display_name, path, metadata)
+	INSERT INTO authz.organizations (name, display_name, path, metadata)
 	VALUES ('ParentOrg', 'Parent Organization', 'parentorg', '{"test_context": true}')
 	RETURNING id INTO parent_org_id;
 	
 	-- Update child org to have parent
-	UPDATE authorization.organizations 
+	UPDATE authz.organizations 
 	SET parent_id = parent_org_id, path = 'parentorg.roletestorg'
 	WHERE id = test_data.org_id;
 	
 	-- Create inheritable role in parent
-	INSERT INTO authorization.roles (organization_id, name, display_name, is_inheritable, priority, metadata)
+	INSERT INTO authz.roles (organization_id, name, display_name, is_inheritable, priority, metadata)
 	VALUES (parent_org_id, 'parent_manager', 'Parent Manager', true, 150, '{"test_context": true}');
 	
 	-- Add user to parent org
-	INSERT INTO authorization.organization_memberships (user_id, organization_id, metadata)
+	INSERT INTO authz.organization_memberships (user_id, organization_id, metadata)
 	VALUES (test_data.test_user1_id, parent_org_id, '{"test_context": true}');
 	
 	-- Assign roles
-	INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, metadata)
+	INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, metadata)
 	VALUES 
 		(test_data.test_user1_id, test_data.role1_id, test_data.org_id, 
 			test_data.admin_user_id, '{"test_context": true}'),
 		(test_data.test_user1_id, 
-			(SELECT id FROM authorization.roles WHERE name = 'parent_manager'), 
+			(SELECT id FROM authz.roles WHERE name = 'parent_manager'), 
 			parent_org_id, test_data.admin_user_id, '{"test_context": true}');
 	
 	-- Test 1: Get all roles for user
 	BEGIN
 		SELECT COUNT(*) INTO role_count
-		FROM authorization.get_user_roles(
+		FROM authz.get_user_roles(
 			test_data.test_user1_id,
 			NULL,  -- All organizations
 			true   -- Include inherited
@@ -417,7 +417,7 @@ BEGIN
 	-- Test 2: Get roles for specific organization (direct only)
 	BEGIN
 		SELECT COUNT(*) INTO role_count
-		FROM authorization.get_user_roles(
+		FROM authz.get_user_roles(
 			test_data.test_user1_id,
 			test_data.org_id,
 			false  -- No inheritance
@@ -434,7 +434,7 @@ BEGIN
 	-- Test 3: Check inherited roles
 	BEGIN
 		SELECT * INTO role_record
-		FROM authorization.get_user_roles(
+		FROM authz.get_user_roles(
 			test_data.test_user1_id,
 			test_data.org_id,
 			true  -- Include inherited
@@ -454,13 +454,13 @@ BEGIN
 	-- Test 4: Expired roles not included
 	BEGIN
 		-- Set role to expired
-		UPDATE authorization.user_roles
+		UPDATE authz.user_roles
 		SET expires_at = CURRENT_TIMESTAMP - INTERVAL '1 hour'
 		WHERE user_id = test_data.test_user1_id 
 			AND role_id = test_data.role1_id;
 		
 		SELECT COUNT(*) INTO role_count
-		FROM authorization.get_user_roles(
+		FROM authz.get_user_roles(
 			test_data.test_user1_id,
 			test_data.org_id,
 			false
@@ -475,14 +475,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Get User Roles';
@@ -509,7 +509,7 @@ BEGIN
 	
 	-- Test 1: Add permission to role
 	BEGIN
-		add_result := authorization.add_permission_to_role(
+		add_result := authz.add_permission_to_role(
 			test_data.role1_id,
 			'roles:manage',
 			test_data.admin_user_id,
@@ -521,8 +521,8 @@ BEGIN
 		
 		-- Verify permission added
 		ASSERT EXISTS(
-			SELECT 1 FROM authorization.role_permissions rp
-			JOIN authorization.permissions p ON rp.permission_id = p.id
+			SELECT 1 FROM authz.role_permissions rp
+			JOIN authz.permissions p ON rp.permission_id = p.id
 			WHERE rp.role_id = test_data.role1_id
 				AND p.permission = 'roles:manage'
 		), 'Permission should be added to role';
@@ -535,7 +535,7 @@ BEGIN
 	
 	-- Test 2: Add duplicate permission should fail
 	BEGIN
-		add_result := authorization.add_permission_to_role(
+		add_result := authz.add_permission_to_role(
 			test_data.role1_id,
 			'roles:manage',
 			test_data.admin_user_id,
@@ -551,7 +551,7 @@ BEGIN
 	
 	-- Test 3: Add invalid permission should fail
 	BEGIN
-		add_result := authorization.add_permission_to_role(
+		add_result := authz.add_permission_to_role(
 			test_data.role1_id,
 			'invalid:permission',
 			test_data.admin_user_id,
@@ -567,7 +567,7 @@ BEGIN
 	
 	-- Test 4: Remove permission from role
 	BEGIN
-		remove_result := authorization.remove_permission_from_role(
+		remove_result := authz.remove_permission_from_role(
 			test_data.role1_id,
 			'roles:manage',
 			test_data.admin_user_id
@@ -577,8 +577,8 @@ BEGIN
 		
 		-- Verify permission removed
 		ASSERT NOT EXISTS(
-			SELECT 1 FROM authorization.role_permissions rp
-			JOIN authorization.permissions p ON rp.permission_id = p.id
+			SELECT 1 FROM authz.role_permissions rp
+			JOIN authz.permissions p ON rp.permission_id = p.id
 			WHERE rp.role_id = test_data.role1_id
 				AND p.permission = 'roles:manage'
 		), 'Permission should be removed from role';
@@ -591,7 +591,7 @@ BEGIN
 	
 	-- Test 5: Remove non-existent permission should fail
 	BEGIN
-		remove_result := authorization.remove_permission_from_role(
+		remove_result := authz.remove_permission_from_role(
 			test_data.role1_id,
 			'roles:manage',
 			test_data.admin_user_id
@@ -606,13 +606,13 @@ BEGIN
 	-- Test 6: Get role permissions
 	BEGIN
 		-- Add multiple permissions
-		add_result := authorization.add_permission_to_role(
+		add_result := authz.add_permission_to_role(
 			test_data.role2_id, 'users:view', test_data.admin_user_id, 
 			'{}', '{"test_context": true}'
 		);
 		
 		SELECT COUNT(*) INTO perm_count
-		FROM authorization.get_role_permissions(test_data.role2_id);
+		FROM authz.get_role_permissions(test_data.role2_id);
 		
 		ASSERT perm_count = 1, 'Should have 1 permission';
 		
@@ -623,14 +623,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Role Permission Management';
@@ -655,7 +655,7 @@ BEGIN
 	SELECT * INTO test_data FROM test.setup_role_test_data();
 	
 	-- Create roles with different expiration times
-	INSERT INTO authorization.user_roles (user_id, role_id, organization_id, granted_by, expires_at, metadata)
+	INSERT INTO authz.user_roles (user_id, role_id, organization_id, granted_by, expires_at, metadata)
 	VALUES 
 		-- Already expired
 		(test_data.test_user1_id, test_data.role1_id, test_data.org_id, 
@@ -673,14 +673,14 @@ BEGIN
 	-- Test 1: Expire roles
 	BEGIN
 		SELECT * INTO expire_result
-		FROM authorization.expire_user_roles();
+		FROM authz.expire_user_roles();
 		
 		ASSERT expire_result.expired_count = 2, 'Should expire 2 roles';
 		ASSERT array_length(expire_result.user_ids, 1) = 2, 'Should affect 2 users';
 		
 		-- Verify expired roles are inactive
 		SELECT COUNT(*) INTO active_count
-		FROM authorization.user_roles
+		FROM authz.user_roles
 		WHERE metadata->>'test_context' = 'true'
 			AND is_active = true;
 		
@@ -688,7 +688,7 @@ BEGIN
 		
 		-- Verify metadata updated
 		ASSERT EXISTS(
-			SELECT 1 FROM authorization.user_roles
+			SELECT 1 FROM authz.user_roles
 			WHERE user_id = test_data.test_user1_id
 				AND role_id = test_data.role1_id
 				AND is_active = false
@@ -704,7 +704,7 @@ BEGIN
 	-- Test 2: Run again - no more to expire
 	BEGIN
 		SELECT * INTO expire_result
-		FROM authorization.expire_user_roles();
+		FROM authz.expire_user_roles();
 		
 		ASSERT expire_result.expired_count = 0, 'Should expire 0 roles on second run';
 		
@@ -715,14 +715,14 @@ BEGIN
 	END;
 	
 	-- Cleanup
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.role_permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.permissions WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.role_permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.permissions WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 	
 	IF test_passed THEN
 		RAISE NOTICE 'TEST SUITE PASSED: Expire User Roles';

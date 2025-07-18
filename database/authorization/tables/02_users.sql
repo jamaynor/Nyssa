@@ -5,12 +5,12 @@
 -- Created: January 2024
 -- ============================================================================
 
-SET search_path TO authorization, public;
+SET search_path TO authz, public;
 
 -- Drop existing table if needed (for clean installs)
--- DROP TABLE IF EXISTS authorization.users CASCADE;
+-- DROP TABLE IF EXISTS authz.users CASCADE;
 
-CREATE TABLE authorization.users (
+CREATE TABLE authz.users (
 	id						UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	external_id				VARCHAR(255) UNIQUE,  -- From identity provider
 	email					VARCHAR(255) NOT NULL,
@@ -39,33 +39,33 @@ CREATE TABLE authorization.users (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_users_email				ON authorization.users(email);
-CREATE INDEX idx_users_email_lower			ON authorization.users(lower(email));
-CREATE INDEX idx_users_external_id			ON authorization.users(external_id);
-CREATE INDEX idx_users_username				ON authorization.users(username);
-CREATE INDEX idx_users_username_lower		ON authorization.users(lower(username));
-CREATE INDEX idx_users_active				ON authorization.users(is_active) WHERE is_active = true;
-CREATE INDEX idx_users_last_login			ON authorization.users(last_login_at);
-CREATE INDEX idx_users_metadata				ON authorization.users USING GIN(metadata);
-CREATE INDEX idx_users_system				ON authorization.users(is_system_user) WHERE is_system_user = true;
-CREATE INDEX idx_users_display_name			ON authorization.users(display_name);
+CREATE INDEX idx_users_email				ON authz.users(email);
+CREATE INDEX idx_users_email_lower			ON authz.users(lower(email));
+CREATE INDEX idx_users_external_id			ON authz.users(external_id);
+CREATE INDEX idx_users_username				ON authz.users(username);
+CREATE INDEX idx_users_username_lower		ON authz.users(lower(username));
+CREATE INDEX idx_users_active				ON authz.users(is_active) WHERE is_active = true;
+CREATE INDEX idx_users_last_login			ON authz.users(last_login_at);
+CREATE INDEX idx_users_metadata				ON authz.users USING GIN(metadata);
+CREATE INDEX idx_users_system				ON authz.users(is_system_user) WHERE is_system_user = true;
+CREATE INDEX idx_users_display_name			ON authz.users(display_name);
 
 -- Comments
-COMMENT ON TABLE authorization.users IS 'User accounts for the RBAC system';
-COMMENT ON COLUMN authorization.users.id IS 'Internal unique identifier';
-COMMENT ON COLUMN authorization.users.external_id IS 'Identifier from external identity provider (SSO, OAuth, etc.)';
-COMMENT ON COLUMN authorization.users.email IS 'Primary email address - must be unique';
-COMMENT ON COLUMN authorization.users.username IS 'Optional username for login - must be unique if provided';
-COMMENT ON COLUMN authorization.users.display_name IS 'Full name for display purposes';
-COMMENT ON COLUMN authorization.users.metadata IS 'Flexible JSON storage for additional user attributes';
-COMMENT ON COLUMN authorization.users.preferences IS 'User-specific settings and preferences';
-COMMENT ON COLUMN authorization.users.is_active IS 'Account active status - inactive users cannot authenticate';
-COMMENT ON COLUMN authorization.users.is_system_user IS 'Flag for system/service accounts';
-COMMENT ON COLUMN authorization.users.email_verified IS 'Email verification status';
-COMMENT ON COLUMN authorization.users.last_login_at IS 'Timestamp of most recent successful login';
+COMMENT ON TABLE  authz.users 				IS 'User accounts for the RBAC system';
+COMMENT ON COLUMN authz.users.id 			IS 'Internal unique identifier';
+COMMENT ON COLUMN authz.users.external_id 	IS 'Identifier from external identity provider (SSO, OAuth, etc.)';
+COMMENT ON COLUMN authz.users.email 		IS 'Primary email address - must be unique';
+COMMENT ON COLUMN authz.users.username 		IS 'Optional username for login - must be unique if provided';
+COMMENT ON COLUMN authz.users.display_name 	IS 'Full name for display purposes';
+COMMENT ON COLUMN authz.users.metadata 		IS 'Flexible JSON storage for additional user attributes';
+COMMENT ON COLUMN authz.users.preferences 	IS 'User-specific settings and preferences';
+COMMENT ON COLUMN authz.users.is_active 	IS 'Account active status - inactive users cannot authenticate';
+COMMENT ON COLUMN authz.users.is_system_user IS 'Flag for system/service accounts';
+COMMENT ON COLUMN authz.users.email_verified IS 'Email verification status';
+COMMENT ON COLUMN authz.users.last_login_at IS 'Timestamp of most recent successful login';
 
 -- Trigger to update updated_at timestamp
 CREATE TRIGGER update_users_updated_at 
-	BEFORE UPDATE ON authorization.users
+	BEFORE UPDATE ON authz.users
 	FOR EACH ROW 
-	EXECUTE FUNCTION authorization.update_updated_at_column();
+	EXECUTE FUNCTION authz.update_updated_at_column();

@@ -11,7 +11,7 @@ SET search_path TO authorization, public;
 -- Function: resolve_user_permissions
 -- Description: Resolves all permissions for a user in an organization with inheritance
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.resolve_user_permissions(
+CREATE OR REPLACE FUNCTION authz.resolve_user_permissions(
 	p_user_id				UUID, 
 	p_org_id				UUID,
 	p_include_inherited		BOOLEAN DEFAULT true,
@@ -35,7 +35,7 @@ DECLARE
 BEGIN
 	-- Get the organization's path
 	SELECT o.path INTO org_path 
-	FROM authorization.organizations o 
+	FROM authz.organizations o 
 	WHERE o.id = p_org_id AND o.is_active = true;
 	
 	IF org_path IS NULL THEN
@@ -58,11 +58,11 @@ BEGIN
 		ur.granted_at,
 		ur.expires_at,
 		p.is_dangerous
-	FROM authorization.user_roles ur
-	JOIN authorization.roles r ON ur.role_id = r.id
-	JOIN authorization.role_permissions rp ON r.id = rp.role_id
-	JOIN authorization.permissions p ON rp.permission_id = p.id
-	JOIN authorization.organizations o ON ur.organization_id = o.id
+	FROM authz.user_roles ur
+	JOIN authz.roles r ON ur.role_id = r.id
+	JOIN authz.role_permissions rp ON r.id = rp.role_id
+	JOIN authz.permissions p ON rp.permission_id = p.id
+	JOIN authz.organizations o ON ur.organization_id = o.id
 	WHERE ur.user_id = p_user_id 
 		AND ur.organization_id = p_org_id
 		AND ur.is_active = true
@@ -86,11 +86,11 @@ BEGIN
 			ur.granted_at,
 			ur.expires_at,
 			p.is_dangerous
-		FROM authorization.user_roles ur
-		JOIN authorization.roles r ON ur.role_id = r.id AND r.is_inheritable = true
-		JOIN authorization.role_permissions rp ON r.id = rp.role_id
-		JOIN authorization.permissions p ON rp.permission_id = p.id
-		JOIN authorization.organizations o ON ur.organization_id = o.id
+		FROM authz.user_roles ur
+		JOIN authz.roles r ON ur.role_id = r.id AND r.is_inheritable = true
+		JOIN authz.role_permissions rp ON r.id = rp.role_id
+		JOIN authz.permissions p ON rp.permission_id = p.id
+		JOIN authz.organizations o ON ur.organization_id = o.id
 		WHERE ur.user_id = p_user_id 
 			AND o.path @> org_path  -- Ancestor organization
 			AND o.path != org_path  -- Exclude self
@@ -108,7 +108,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: check_user_permission
 -- Description: Optimized single permission check with inheritance support
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.check_user_permission(
+CREATE OR REPLACE FUNCTION authz.check_user_permission(
 	p_user_id				UUID,
 	p_org_id				UUID,
 	p_permission			VARCHAR,
@@ -126,7 +126,7 @@ DECLARE
 BEGIN
 	-- Get organization path
 	SELECT o.path INTO org_path
-	FROM authorization.organizations o
+	FROM authz.organizations o
 	WHERE o.id = p_org_id AND o.is_active = true;
 	
 	IF org_path IS NULL THEN
@@ -141,10 +141,10 @@ BEGIN
 		r.name as role_name,
 		ur.expires_at
 	INTO result_record
-	FROM authorization.user_roles ur
-	JOIN authorization.roles r ON ur.role_id = r.id
-	JOIN authorization.role_permissions rp ON r.id = rp.role_id
-	JOIN authorization.permissions p ON rp.permission_id = p.id
+	FROM authz.user_roles ur
+	JOIN authz.roles r ON ur.role_id = r.id
+	JOIN authz.role_permissions rp ON r.id = rp.role_id
+	JOIN authz.permissions p ON rp.permission_id = p.id
 	WHERE ur.user_id = p_user_id 
 		AND ur.organization_id = p_org_id
 		AND ur.is_active = true
@@ -168,11 +168,11 @@ BEGIN
 			r.name as role_name,
 			ur.expires_at
 		INTO result_record
-		FROM authorization.user_roles ur
-		JOIN authorization.roles r ON ur.role_id = r.id AND r.is_inheritable = true
-		JOIN authorization.role_permissions rp ON r.id = rp.role_id
-		JOIN authorization.permissions p ON rp.permission_id = p.id
-		JOIN authorization.organizations o ON ur.organization_id = o.id
+		FROM authz.user_roles ur
+		JOIN authz.roles r ON ur.role_id = r.id AND r.is_inheritable = true
+		JOIN authz.role_permissions rp ON r.id = rp.role_id
+		JOIN authz.permissions p ON rp.permission_id = p.id
+		JOIN authz.organizations o ON ur.organization_id = o.id
 		WHERE ur.user_id = p_user_id 
 			AND o.path @> org_path
 			AND o.path != org_path
@@ -200,7 +200,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: check_user_permissions_bulk
 -- Description: Efficiently check multiple permissions at once
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.check_user_permissions_bulk(
+CREATE OR REPLACE FUNCTION authz.check_user_permissions_bulk(
 	p_user_id				UUID,
 	p_org_id				UUID,
 	p_permissions			VARCHAR[],
@@ -218,7 +218,7 @@ DECLARE
 BEGIN
 	-- Get organization path
 	SELECT o.path INTO org_path
-	FROM authorization.organizations o
+	FROM authz.organizations o
 	WHERE o.id = p_org_id AND o.is_active = true;
 	
 	IF org_path IS NULL THEN
@@ -238,10 +238,10 @@ BEGIN
 			'direct' as source,
 			r.name as role_name,
 			r.priority
-		FROM authorization.user_roles ur
-		JOIN authorization.roles r ON ur.role_id = r.id
-		JOIN authorization.role_permissions rp ON r.id = rp.role_id
-		JOIN authorization.permissions p ON rp.permission_id = p.id
+		FROM authz.user_roles ur
+		JOIN authz.roles r ON ur.role_id = r.id
+		JOIN authz.role_permissions rp ON r.id = rp.role_id
+		JOIN authz.permissions p ON rp.permission_id = p.id
 		WHERE ur.user_id = p_user_id 
 			AND ur.organization_id = p_org_id
 			AND ur.is_active = true
@@ -249,7 +249,6 @@ BEGIN
 			AND r.is_assignable = true
 			AND (ur.expires_at IS NULL OR ur.expires_at > CURRENT_TIMESTAMP)
 			AND p.permission = ANY(p_permissions)
-		ORDER BY p.permission, r.priority DESC
 		
 		UNION ALL
 		
@@ -259,11 +258,11 @@ BEGIN
 			'inherited' as source,
 			r.name as role_name,
 			r.priority
-		FROM authorization.user_roles ur
-		JOIN authorization.roles r ON ur.role_id = r.id AND r.is_inheritable = true
-		JOIN authorization.role_permissions rp ON r.id = rp.role_id
-		JOIN authorization.permissions p ON rp.permission_id = p.id
-		JOIN authorization.organizations o ON ur.organization_id = o.id
+		FROM authz.user_roles ur
+		JOIN authz.roles r ON ur.role_id = r.id AND r.is_inheritable = true
+		JOIN authz.role_permissions rp ON r.id = rp.role_id
+		JOIN authz.permissions p ON rp.permission_id = p.id
+		JOIN authz.organizations o ON ur.organization_id = o.id
 		WHERE ur.user_id = p_user_id 
 			AND o.path @> org_path
 			AND o.path != org_path
@@ -274,10 +273,9 @@ BEGIN
 			AND (ur.expires_at IS NULL OR ur.expires_at > CURRENT_TIMESTAMP)
 			AND p.permission = ANY(p_permissions)
 			AND p_include_inherited = true
-		ORDER BY p.permission, r.priority DESC
-	),
+	)
 	-- Get highest priority permission for each permission string
-	prioritized_permissions AS (
+	, prioritized_permissions AS (
 		SELECT DISTINCT ON (permission)
 			permission,
 			source,
@@ -302,7 +300,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: get_role_permissions
 -- Description: Get all permissions for a specific role
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_role_permissions(
+CREATE OR REPLACE FUNCTION authz.get_role_permissions(
 	p_role_id				UUID
 )
 RETURNS TABLE(
@@ -328,8 +326,8 @@ BEGIN
 		p.is_dangerous,
 		rp.granted_at,
 		rp.granted_by
-	FROM authorization.role_permissions rp
-	JOIN authorization.permissions p ON rp.permission_id = p.id
+	FROM authz.role_permissions rp
+	JOIN authz.permissions p ON rp.permission_id = p.id
 	WHERE rp.role_id = p_role_id
 	ORDER BY p.category, p.resource, p.action;
 END;
@@ -339,7 +337,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: get_effective_permissions_summary
 -- Description: Get a summary of all effective permissions for a user in an org
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_effective_permissions_summary(
+CREATE OR REPLACE FUNCTION authz.get_effective_permissions_summary(
 	p_user_id				UUID,
 	p_org_id				UUID
 )
@@ -353,7 +351,7 @@ RETURNS TABLE(
 BEGIN
 	RETURN QUERY
 	WITH all_permissions AS (
-		SELECT * FROM authorization.resolve_user_permissions(p_user_id, p_org_id, true, NULL)
+		SELECT * FROM authz.resolve_user_permissions(p_user_id, p_org_id, true, NULL)
 	)
 	SELECT 
 		p.category,
@@ -362,15 +360,15 @@ BEGIN
 		ap.source,
 		array_agg(DISTINCT ap.role_name ORDER BY ap.role_name) as role_names
 	FROM all_permissions ap
-	JOIN authorization.permissions p ON ap.permission = p.permission
+	JOIN authz.permissions p ON ap.permission = p.permission
 	GROUP BY p.category, p.resource, ap.source
 	ORDER BY p.category, p.resource, ap.source;
 END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- Comments
-COMMENT ON FUNCTION authorization.resolve_user_permissions IS 'Resolves all permissions for a user in an organization, including inherited permissions';
-COMMENT ON FUNCTION authorization.check_user_permission IS 'Optimized function to check if a user has a specific permission in an organization';
-COMMENT ON FUNCTION authorization.check_user_permissions_bulk IS 'Efficiently checks multiple permissions at once for a user';
-COMMENT ON FUNCTION authorization.get_role_permissions IS 'Returns all permissions assigned to a specific role';
-COMMENT ON FUNCTION authorization.get_effective_permissions_summary IS 'Returns a categorized summary of all effective permissions for a user';
+COMMENT ON FUNCTION authz.resolve_user_permissions IS 'Resolves all permissions for a user in an organization, including inherited permissions';
+COMMENT ON FUNCTION authz.check_user_permission IS 'Optimized function to check if a user has a specific permission in an organization';
+COMMENT ON FUNCTION authz.check_user_permissions_bulk IS 'Efficiently checks multiple permissions at once for a user';
+COMMENT ON FUNCTION authz.get_role_permissions IS 'Returns all permissions assigned to a specific role';
+COMMENT ON FUNCTION authz.get_effective_permissions_summary IS 'Returns a categorized summary of all effective permissions for a user';

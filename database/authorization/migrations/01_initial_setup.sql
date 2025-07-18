@@ -77,7 +77,7 @@ BEGIN;
 \echo 'Setting up initial data...'
 
 -- Create system permissions
-INSERT INTO authorization.permissions (permission, display_name, category, is_system_permission) VALUES
+INSERT INTO authz.permissions (permission, display_name, category, is_system_permission) VALUES
 	-- System permissions
 	('system:admin', 'System Administrator', 'system', true),
 	('system:manage_organizations', 'Manage Organizations', 'system', true),
@@ -113,7 +113,7 @@ ON CONFLICT (permission) DO NOTHING;
 -- 6. Refresh Materialized View
 -- ============================================================================
 \echo 'Refreshing materialized views...'
-REFRESH MATERIALIZED VIEW authorization.user_effective_permissions;
+REFRESH MATERIALIZED VIEW authz.user_effective_permissions;
 
 -- ============================================================================
 -- 7. Create scheduled jobs (if pg_cron is available)
@@ -179,17 +179,17 @@ END;
 $$;
 
 -- Grant schema usage
-GRANT USAGE ON SCHEMA authorization TO rbac_app_user;
+GRANT USAGE ON SCHEMA authz TO rbac_app_user;
 
 -- Grant table permissions
-GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA authorization TO rbac_app_user;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA authorization TO rbac_app_user;
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA authz TO rbac_app_user;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA authz TO rbac_app_user;
 
 -- Grant function execution
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA authorization TO rbac_app_user;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA authz TO rbac_app_user;
 
 -- Audit events should be insert-only for the application
-REVOKE UPDATE, DELETE ON authorization.audit_events FROM rbac_app_user;
+REVOKE UPDATE, DELETE ON authz.audit_events FROM rbac_app_user;
 
 -- ============================================================================
 -- 9. Create indexes for partition tables
@@ -197,9 +197,9 @@ REVOKE UPDATE, DELETE ON authorization.audit_events FROM rbac_app_user;
 \echo 'Creating partition indexes...'
 
 -- Create indexes on initial partitions
-CREATE INDEX IF NOT EXISTS idx_audit_y2024m01_occurred ON authorization.audit_events_y2024m01(occurred_at DESC);
-CREATE INDEX IF NOT EXISTS idx_audit_y2024m02_occurred ON authorization.audit_events_y2024m02(occurred_at DESC);
-CREATE INDEX IF NOT EXISTS idx_audit_y2024m03_occurred ON authorization.audit_events_y2024m03(occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_y2024m01_occurred ON authz.audit_events_y2024m01(occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_y2024m02_occurred ON authz.audit_events_y2024m02(occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_y2024m03_occurred ON authz.audit_events_y2024m03(occurred_at DESC);
 
 -- ============================================================================
 -- 10. Validation
@@ -215,7 +215,7 @@ BEGIN
 	-- Check tables
 	SELECT COUNT(*) INTO table_count
 	FROM information_schema.tables
-	WHERE table_schema = 'authorization'
+	WHERE table_schema = 'authz'
 		AND table_type = 'BASE TABLE';
 	
 	IF table_count < 9 THEN
@@ -225,7 +225,7 @@ BEGIN
 	-- Check functions
 	SELECT COUNT(*) INTO function_count
 	FROM information_schema.routines
-	WHERE routine_schema = 'authorization'
+	WHERE routine_schema = 'authz'
 		AND routine_type = 'FUNCTION';
 	
 	IF function_count < 20 THEN
@@ -234,7 +234,7 @@ BEGIN
 	
 	-- Check permissions
 	SELECT COUNT(*) INTO permission_count
-	FROM authorization.permissions;
+	FROM authz.permissions;
 	
 	IF permission_count < 15 THEN
 		RAISE EXCEPTION 'Expected at least 15 permissions, found %', permission_count;

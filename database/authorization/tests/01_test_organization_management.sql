@@ -5,10 +5,12 @@
 -- Created: January 2024
 -- ============================================================================
 
-SET search_path TO authorization, public;
+SET search_path TO authz, public;
+
+create schema if not exists test;
 
 -- Enable detailed error messages
-\set VERBOSITY verbose
+-- \set VERBOSITY verbose
 
 -- ============================================================================
 -- Test Helper Functions
@@ -17,11 +19,11 @@ CREATE OR REPLACE FUNCTION test.cleanup_test_data()
 RETURNS VOID AS $$
 BEGIN
 	-- Clean up test data in reverse dependency order
-	DELETE FROM authorization.audit_events WHERE details->>'test_context' = 'true';
-	DELETE FROM authorization.user_roles WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organization_memberships WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.organizations WHERE metadata->>'test_context' = 'true';
-	DELETE FROM authorization.users WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.audit_events WHERE details->>'test_context' = 'true';
+	DELETE FROM authz.user_roles WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organization_memberships WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.organizations WHERE metadata->>'test_context' = 'true';
+	DELETE FROM authz.users WHERE metadata->>'test_context' = 'true';
 END;
 $$ LANGUAGE plpgsql;
 
@@ -30,7 +32,7 @@ RETURNS UUID AS $$
 DECLARE
 	user_id UUID;
 BEGIN
-	INSERT INTO authorization.users (email, first_name, last_name, metadata)
+	INSERT INTO authz.users (email, first_name, last_name, metadata)
 	VALUES (p_email, 'Test', 'User', '{"test_context": true}')
 	RETURNING id INTO user_id;
 	
@@ -55,7 +57,7 @@ BEGIN
 	
 	-- Test 1: Create root organization
 	BEGIN
-		SELECT * INTO org_result FROM authorization.create_organization(
+		SELECT * INTO org_result FROM authz.create_organization(
 			'Acme Corp',
 			'ACME Corporation',
 			'Test root organization',
@@ -76,7 +78,7 @@ BEGIN
 	
 	-- Test 2: Create child organization
 	BEGIN
-		SELECT * INTO org_result FROM authorization.create_organization(
+		SELECT * INTO org_result FROM authz.create_organization(
 			'Engineering',
 			'Engineering Department',
 			'Test child organization',
@@ -95,7 +97,7 @@ BEGIN
 	
 	-- Test 3: Duplicate path should fail
 	BEGIN
-		SELECT * INTO org_result FROM authorization.create_organization(
+		SELECT * INTO org_result FROM authz.create_organization(
 			'Acme Corp',
 			'Duplicate Org',
 			'Should fail',
@@ -112,7 +114,7 @@ BEGIN
 	
 	-- Test 4: Invalid parent should fail
 	BEGIN
-		SELECT * INTO org_result FROM authorization.create_organization(
+		SELECT * INTO org_result FROM authz.create_organization(
 			'Invalid Org',
 			'Invalid Org',
 			'Should fail',
@@ -158,31 +160,31 @@ BEGIN
 	test_user_id := test.create_test_user();
 	
 	-- Create test organization hierarchy
-	SELECT id INTO root_org_id FROM authorization.create_organization(
+	SELECT id INTO root_org_id FROM authz.create_organization(
 		'MoveTest Corp', 'MoveTest Corporation', 'Root', NULL, test_user_id, 
 		'{"test_context": true}'::jsonb
 	);
 	
-	SELECT id INTO dept1_id FROM authorization.create_organization(
+	SELECT id INTO dept1_id FROM authz.create_organization(
 		'Department 1', 'Dept 1', 'First dept', root_org_id, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
-	SELECT id INTO dept2_id FROM authorization.create_organization(
+	SELECT id INTO dept2_id FROM authz.create_organization(
 		'Department 2', 'Dept 2', 'Second dept', root_org_id, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
-	SELECT id INTO subdept_id FROM authorization.create_organization(
+	SELECT id INTO subdept_id FROM authz.create_organization(
 		'Sub Department', 'Sub Dept', 'Sub dept under dept1', dept1_id, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
 	-- Test 1: Move subdepartment to different parent
 	BEGIN
-		move_result := authorization.move_organization(subdept_id, dept2_id, test_user_id);
+		move_result := authz.move_organization(subdept_id, dept2_id, test_user_id);
 		
-		SELECT * INTO org_record FROM authorization.organizations WHERE id = subdept_id;
+		SELECT * INTO org_record FROM authz.organizations WHERE id = subdept_id;
 		
 		ASSERT move_result = true, 'Move should return true';
 		ASSERT org_record.parent_id = dept2_id, 'Parent should be updated';
@@ -197,9 +199,9 @@ BEGIN
 	
 	-- Test 2: Move to root (null parent)
 	BEGIN
-		move_result := authorization.move_organization(subdept_id, NULL, test_user_id);
+		move_result := authz.move_organization(subdept_id, NULL, test_user_id);
 		
-		SELECT * INTO org_record FROM authorization.organizations WHERE id = subdept_id;
+		SELECT * INTO org_record FROM authz.organizations WHERE id = subdept_id;
 		
 		ASSERT org_record.parent_id IS NULL, 'Parent should be null';
 		ASSERT org_record.path::text = 'sub_department', 'Path should be root level';
@@ -213,8 +215,8 @@ BEGIN
 	-- Test 3: Circular reference should fail
 	BEGIN
 		-- Move dept1 back under subdept to create circular reference
-		move_result := authorization.move_organization(subdept_id, dept1_id, test_user_id);
-		move_result := authorization.move_organization(dept1_id, subdept_id, test_user_id);
+		move_result := authz.move_organization(subdept_id, dept1_id, test_user_id);
+		move_result := authz.move_organization(dept1_id, subdept_id, test_user_id);
 		
 		RAISE NOTICE 'TEST FAILED: Circular reference should have failed';
 		test_passed := false;
@@ -254,29 +256,29 @@ BEGIN
 	member_user_id := test.create_test_user('member@example.com');
 	
 	-- Create test hierarchy
-	SELECT id INTO root_org_id FROM authorization.create_organization(
+	SELECT id INTO root_org_id FROM authz.create_organization(
 		'Hierarchy Corp', 'Hierarchy Corporation', 'Root', NULL, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
-	SELECT id INTO dept_id FROM authorization.create_organization(
+	SELECT id INTO dept_id FROM authz.create_organization(
 		'Department', 'Department', 'Dept', root_org_id, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
-	SELECT id INTO subdept_id FROM authorization.create_organization(
+	SELECT id INTO subdept_id FROM authz.create_organization(
 		'SubDepartment', 'Sub Department', 'SubDept', dept_id, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
 	-- Add member to department
-	INSERT INTO authorization.organization_memberships (user_id, organization_id, metadata)
+	INSERT INTO authz.organization_memberships (user_id, organization_id, metadata)
 	VALUES (member_user_id, dept_id, '{"test_context": true}'::jsonb);
 	
 	-- Test 1: Get full hierarchy without user filter
 	BEGIN
 		SELECT COUNT(*) INTO record_count 
-		FROM authorization.get_organization_hierarchy(
+		FROM authz.get_organization_hierarchy(
 			NULL,  -- No user filter
 			NULL,  -- No root filter
 			NULL,  -- No depth limit
@@ -294,7 +296,7 @@ BEGIN
 	-- Test 2: Get hierarchy from specific root
 	BEGIN
 		SELECT COUNT(*) INTO record_count 
-		FROM authorization.get_organization_hierarchy(
+		FROM authz.get_organization_hierarchy(
 			NULL,
 			root_org_id,  -- Start from our root
 			NULL,
@@ -312,7 +314,7 @@ BEGIN
 	-- Test 3: Get hierarchy with depth limit
 	BEGIN
 		SELECT COUNT(*) INTO record_count 
-		FROM authorization.get_organization_hierarchy(
+		FROM authz.get_organization_hierarchy(
 			NULL,
 			root_org_id,
 			1,  -- Max depth of 1
@@ -330,7 +332,7 @@ BEGIN
 	-- Test 4: Check member access
 	BEGIN
 		SELECT * INTO hierarchy_record
-		FROM authorization.get_organization_hierarchy(
+		FROM authz.get_organization_hierarchy(
 			member_user_id,  -- Filter by member
 			NULL,
 			NULL,
@@ -377,19 +379,19 @@ BEGIN
 	member_user_id := test.create_test_user('access@example.com');
 	
 	-- Create organizations
-	SELECT id INTO root_org_id FROM authorization.create_organization(
+	SELECT id INTO root_org_id FROM authz.create_organization(
 		'Access Corp', 'Access Corporation', 'Root', NULL, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
-	SELECT id INTO dept_id FROM authorization.create_organization(
+	SELECT id INTO dept_id FROM authz.create_organization(
 		'Access Dept', 'Access Department', 'Dept', root_org_id, test_user_id,
 		'{"test_context": true}'::jsonb
 	);
 	
 	-- Test 1: No access without membership
 	BEGIN
-		has_access := authorization.user_has_organization_access(member_user_id, dept_id);
+		has_access := authz.user_has_organization_access(member_user_id, dept_id);
 		
 		ASSERT has_access = false, 'Should not have access without membership';
 		
@@ -402,10 +404,10 @@ BEGIN
 	-- Test 2: Access with direct membership
 	BEGIN
 		-- Add membership
-		INSERT INTO authorization.organization_memberships (user_id, organization_id, metadata)
+		INSERT INTO authz.organization_memberships (user_id, organization_id, metadata)
 		VALUES (member_user_id, dept_id, '{"test_context": true}'::jsonb);
 		
-		has_access := authorization.user_has_organization_access(member_user_id, dept_id);
+		has_access := authz.user_has_organization_access(member_user_id, dept_id);
 		
 		ASSERT has_access = true, 'Should have access with membership';
 		
@@ -418,9 +420,9 @@ BEGIN
 	-- Test 3: Access to inactive organization
 	BEGIN
 		-- Deactivate organization
-		UPDATE authorization.organizations SET is_active = false WHERE id = dept_id;
+		UPDATE authz.organizations SET is_active = false WHERE id = dept_id;
 		
-		has_access := authorization.user_has_organization_access(member_user_id, dept_id);
+		has_access := authz.user_has_organization_access(member_user_id, dept_id);
 		
 		ASSERT has_access = false, 'Should not have access to inactive org';
 		

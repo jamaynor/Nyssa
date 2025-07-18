@@ -11,7 +11,7 @@ SET search_path TO authorization, public;
 -- Function: blacklist_token
 -- Description: Adds a token to the blacklist for immediate revocation
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.blacklist_token(
+CREATE OR REPLACE FUNCTION authz.blacklist_token(
 	p_token_jti				VARCHAR(255),
 	p_user_id				UUID,
 	p_organization_id		UUID DEFAULT NULL,
@@ -22,7 +22,7 @@ CREATE OR REPLACE FUNCTION authorization.blacklist_token(
 RETURNS BOOLEAN AS $$
 BEGIN
 	-- Insert into blacklist
-	INSERT INTO authorization.token_blacklist (
+	INSERT INTO authz.token_blacklist (
 		token_jti, user_id, organization_id, revoked_by, reason, expires_at
 	) VALUES (
 		p_token_jti, p_user_id, p_organization_id, p_revoked_by, p_reason, 
@@ -33,7 +33,7 @@ BEGIN
 		reason = EXCLUDED.reason;
 	
 	-- Log the revocation
-	PERFORM authorization.log_audit_event(
+	PERFORM authz.log_audit_event(
 		'TOKEN_REVOKED',
 		'SECURITY',
 		p_revoked_by,
@@ -58,13 +58,13 @@ $$ LANGUAGE plpgsql;
 -- Function: is_token_blacklisted
 -- Description: Checks if a token is blacklisted
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.is_token_blacklisted(
+CREATE OR REPLACE FUNCTION authz.is_token_blacklisted(
 	p_token_jti				VARCHAR(255)
 )
 RETURNS BOOLEAN AS $$
 BEGIN
 	RETURN EXISTS(
-		SELECT 1 FROM authorization.token_blacklist
+		SELECT 1 FROM authz.token_blacklist
 		WHERE token_jti = p_token_jti
 			AND expires_at > CURRENT_TIMESTAMP
 	);
@@ -75,7 +75,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: emergency_revoke_user_tokens
 -- Description: Emergency revocation of all tokens for a user
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.emergency_revoke_user_tokens(
+CREATE OR REPLACE FUNCTION authz.emergency_revoke_user_tokens(
 	p_user_id				UUID,
 	p_revoked_by			UUID,
 	p_reason				VARCHAR DEFAULT 'Emergency revocation'
@@ -85,7 +85,7 @@ DECLARE
 	revoked_count			INTEGER := 0;
 BEGIN
 	-- Insert a special blacklist entry that blocks all tokens for this user
-	INSERT INTO authorization.token_blacklist (
+	INSERT INTO authz.token_blacklist (
 		token_jti, user_id, revoked_by, reason, expires_at, metadata
 	) VALUES (
 		'EMERGENCY_' || p_user_id::text, 
@@ -101,7 +101,7 @@ BEGIN
 		expires_at = EXCLUDED.expires_at;
 	
 	-- Log emergency revocation
-	PERFORM authorization.log_audit_event(
+	PERFORM authz.log_audit_event(
 		'EMERGENCY_TOKEN_REVOCATION',
 		'SECURITY',
 		p_revoked_by,
@@ -125,7 +125,7 @@ $$ LANGUAGE plpgsql;
 -- Function: log_audit_event
 -- Description: Centralized audit logging function
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.log_audit_event(
+CREATE OR REPLACE FUNCTION authz.log_audit_event(
 	p_event_type			VARCHAR(100),
 	p_event_category		VARCHAR(50),
 	p_user_id				UUID DEFAULT NULL,
@@ -146,7 +146,7 @@ DECLARE
 BEGIN
 	event_id := uuid_generate_v4();
 	
-	INSERT INTO authorization.audit_events (
+	INSERT INTO authz.audit_events (
 		id, event_type, event_category, user_id, organization_id,
 		resource_type, resource_id, action, result, details,
 		ip_address, user_agent, session_id, request_id
@@ -164,7 +164,7 @@ $$ LANGUAGE plpgsql;
 -- Function: invalidate_user_permission_cache
 -- Description: Marks user permissions for cache invalidation
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.invalidate_user_permission_cache(
+CREATE OR REPLACE FUNCTION authz.invalidate_user_permission_cache(
 	p_user_id				UUID,
 	p_organization_id		UUID DEFAULT NULL
 )
@@ -172,7 +172,7 @@ RETURNS VOID AS $$
 BEGIN
 	-- This function is called by the application layer to invalidate Redis cache
 	-- Log cache invalidation for debugging
-	PERFORM authorization.log_audit_event(
+	PERFORM authz.log_audit_event(
 		'CACHE_INVALIDATED',
 		'SYSTEM',
 		p_user_id,
@@ -194,21 +194,21 @@ $$ LANGUAGE plpgsql;
 -- Function: cleanup_expired_tokens
 -- Description: Removes expired tokens from blacklist
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.cleanup_expired_tokens()
+CREATE OR REPLACE FUNCTION authz.cleanup_expired_tokens()
 RETURNS TABLE(
 	deleted_count			INTEGER
 ) AS $$
 DECLARE
 	cleanup_count			INTEGER;
 BEGIN
-	DELETE FROM authorization.token_blacklist
+	DELETE FROM authz.token_blacklist
 	WHERE expires_at < CURRENT_TIMESTAMP;
 	
 	GET DIAGNOSTICS cleanup_count = ROW_COUNT;
 	
 	-- Log cleanup if any tokens were removed
 	IF cleanup_count > 0 THEN
-		PERFORM authorization.log_audit_event(
+		PERFORM authz.log_audit_event(
 			'TOKEN_CLEANUP',
 			'SYSTEM',
 			NULL,
@@ -232,7 +232,7 @@ $$ LANGUAGE plpgsql;
 -- Function: get_audit_events
 -- Description: Retrieves audit events with filtering options
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_audit_events(
+CREATE OR REPLACE FUNCTION authz.get_audit_events(
 	p_start_date			TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	p_end_date				TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	p_user_id				UUID DEFAULT NULL,
@@ -272,7 +272,7 @@ BEGIN
 		ae.ip_address,
 		ae.details,
 		ae.occurred_at
-	FROM authorization.audit_events ae
+	FROM authz.audit_events ae
 	WHERE (p_start_date IS NULL OR ae.occurred_at >= p_start_date)
 		AND (p_end_date IS NULL OR ae.occurred_at <= p_end_date)
 		AND (p_user_id IS NULL OR ae.user_id = p_user_id)
@@ -290,7 +290,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: get_security_events_summary
 -- Description: Returns a summary of security events for monitoring
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.get_security_events_summary(
+CREATE OR REPLACE FUNCTION authz.get_security_events_summary(
 	p_time_window			INTERVAL DEFAULT INTERVAL '1 hour'
 )
 RETURNS TABLE(
@@ -312,7 +312,7 @@ BEGIN
 		COUNT(*) FILTER (WHERE ae.result = 'failure') as failure_count,
 		MIN(ae.occurred_at) as first_occurrence,
 		MAX(ae.occurred_at) as last_occurrence
-	FROM authorization.audit_events ae
+	FROM authz.audit_events ae
 	WHERE ae.event_category IN ('SECURITY', 'AUTHENTICATION', 'AUTHORIZATION')
 		AND ae.occurred_at >= CURRENT_TIMESTAMP - p_time_window
 	GROUP BY ae.event_type
@@ -324,7 +324,7 @@ $$ LANGUAGE plpgsql STABLE;
 -- Function: detect_suspicious_activity
 -- Description: Detects potential security threats based on audit patterns
 -- ============================================================================
-CREATE OR REPLACE FUNCTION authorization.detect_suspicious_activity(
+CREATE OR REPLACE FUNCTION authz.detect_suspicious_activity(
 	p_threshold_minutes		INTEGER DEFAULT 5,
 	p_failure_threshold		INTEGER DEFAULT 5
 )
@@ -349,7 +349,7 @@ BEGIN
 			'first_attempt', MIN(ae.occurred_at),
 			'last_attempt', MAX(ae.occurred_at)
 		) as details
-	FROM authorization.audit_events ae
+	FROM authz.audit_events ae
 	WHERE ae.event_type IN ('AUTHENTICATION_FAILED', 'PERMISSION_DENIED')
 		AND ae.result = 'failure'
 		AND ae.occurred_at >= CURRENT_TIMESTAMP - (p_threshold_minutes || ' minutes')::INTERVAL
@@ -367,7 +367,7 @@ BEGIN
 			'organizations_accessed', array_agg(DISTINCT ae.organization_id),
 			'time_window_minutes', p_threshold_minutes
 		) as details
-	FROM authorization.audit_events ae
+	FROM authz.audit_events ae
 	WHERE ae.event_type = 'PERMISSION_CHECK'
 		AND ae.occurred_at >= CURRENT_TIMESTAMP - (p_threshold_minutes || ' minutes')::INTERVAL
 		AND ae.user_id IS NOT NULL
@@ -377,12 +377,12 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- Comments
-COMMENT ON FUNCTION authorization.blacklist_token IS 'Adds a JWT token to the blacklist for immediate revocation';
-COMMENT ON FUNCTION authorization.is_token_blacklisted IS 'Checks if a token is currently blacklisted';
-COMMENT ON FUNCTION authorization.emergency_revoke_user_tokens IS 'Emergency revocation of all tokens for a specific user';
-COMMENT ON FUNCTION authorization.log_audit_event IS 'Central audit logging function for all system events';
-COMMENT ON FUNCTION authorization.invalidate_user_permission_cache IS 'Marks user permissions for cache invalidation';
-COMMENT ON FUNCTION authorization.cleanup_expired_tokens IS 'Removes expired tokens from the blacklist';
-COMMENT ON FUNCTION authorization.get_audit_events IS 'Retrieves audit events with flexible filtering options';
-COMMENT ON FUNCTION authorization.get_security_events_summary IS 'Returns a summary of security events for monitoring dashboards';
-COMMENT ON FUNCTION authorization.detect_suspicious_activity IS 'Detects potential security threats based on audit event patterns';
+COMMENT ON FUNCTION authz.blacklist_token IS 'Adds a JWT token to the blacklist for immediate revocation';
+COMMENT ON FUNCTION authz.is_token_blacklisted IS 'Checks if a token is currently blacklisted';
+COMMENT ON FUNCTION authz.emergency_revoke_user_tokens IS 'Emergency revocation of all tokens for a specific user';
+COMMENT ON FUNCTION authz.log_audit_event IS 'Central audit logging function for all system events';
+COMMENT ON FUNCTION authz.invalidate_user_permission_cache IS 'Marks user permissions for cache invalidation';
+COMMENT ON FUNCTION authz.cleanup_expired_tokens IS 'Removes expired tokens from the blacklist';
+COMMENT ON FUNCTION authz.get_audit_events IS 'Retrieves audit events with flexible filtering options';
+COMMENT ON FUNCTION authz.get_security_events_summary IS 'Returns a summary of security events for monitoring dashboards';
+COMMENT ON FUNCTION authz.detect_suspicious_activity IS 'Detects potential security threats based on audit event patterns';

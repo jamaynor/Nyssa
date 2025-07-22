@@ -25,16 +25,43 @@ namespace Nyssa.Mcp.Server.Services
         {
             try
             {
+                _logger.LogInformation("=== WORKOS TOKEN EXCHANGE START ===");
                 _logger.LogInformation("Exchanging authorization code for token");
+                _logger.LogInformation("Authorization code: {Code}", code);
+                _logger.LogInformation("Client ID: {ClientId}", _config.ClientId);
+                _logger.LogInformation("Has API Key: {HasApiKey}", !string.IsNullOrEmpty(_config.ApiKey));
                 
                 // Exchange authorization code for access token
+                _logger.LogInformation("Step 1: Exchanging code for access token");
                 var tokenResponse = await ExchangeCodeForAccessTokenAsync(code);
                 
-                // Get user profile from WorkOS
-                var userProfile = await GetUserProfileAsync(tokenResponse.AccessToken);
+                _logger.LogInformation("Token exchange successful - Access token length: {TokenLength}", tokenResponse.AccessToken?.Length ?? 0);
+                
+                // Extract user profile from token response
+                _logger.LogInformation("Step 2: Extracting user profile from token response");
+                if (tokenResponse.User == null)
+                {
+                    throw new Exception("User profile not included in token response");
+                }
+                
+                var userProfile = new UserProfile
+                {
+                    Id = tokenResponse.User.Id,
+                    Email = tokenResponse.User.Email,
+                    FirstName = tokenResponse.User.FirstName ?? "",
+                    LastName = tokenResponse.User.LastName ?? "",
+                    ProfilePictureUrl = tokenResponse.User.ProfilePictureUrl ?? "",
+                    CreatedAt = tokenResponse.User.CreatedAt,
+                    UpdatedAt = tokenResponse.User.UpdatedAt
+                };
+                
+                _logger.LogInformation("User profile extracted - ID: {UserId}, Email: {Email}", userProfile.Id, userProfile.Email);
                 
                 // Calculate token expiration (default to 1 hour if not provided)
                 var expiresAt = DateTime.UtcNow.AddSeconds(tokenResponse.ExpiresIn ?? 3600);
+                
+                _logger.LogInformation("Token expires at: {ExpiresAt}", expiresAt);
+                _logger.LogInformation("=== WORKOS TOKEN EXCHANGE SUCCESS ===");
                 
                 return new AuthenticationResult
                 {
@@ -47,7 +74,11 @@ namespace Nyssa.Mcp.Server.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "=== WORKOS TOKEN EXCHANGE FAILED ===");
                 _logger.LogError(ex, "Token exchange failed: {Message}", ex.Message);
+                _logger.LogError("Exception type: {ExceptionType}", ex.GetType().Name);
+                _logger.LogError("Stack trace: {StackTrace}", ex.StackTrace);
+                
                 return new AuthenticationResult
                 {
                     IsSuccess = false,
@@ -58,6 +89,8 @@ namespace Nyssa.Mcp.Server.Services
 
         private async Task<TokenResponse> ExchangeCodeForAccessTokenAsync(string code)
         {
+            _logger.LogInformation("--- TOKEN REQUEST START ---");
+            
             var tokenRequest = new
             {
                 client_id = _config.ClientId,
@@ -69,21 +102,35 @@ namespace Nyssa.Mcp.Server.Services
             var json = JsonSerializer.Serialize(tokenRequest);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var response = await _httpClient.PostAsync("https://api.workos.com/sso/token", content);
+            _logger.LogInformation("Token request payload: {Payload}", json);
+            _logger.LogInformation("Making POST request to: https://api.workos.com/user_management/authenticate");
+            
+            var response = await _httpClient.PostAsync("https://api.workos.com/user_management/authenticate", content);
             var responseContent = await response.Content.ReadAsStringAsync();
+            
+            _logger.LogInformation("Token exchange response status: {StatusCode}", response.StatusCode);
+            _logger.LogInformation("Token exchange response body: {ResponseBody}", responseContent);
             
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError("Token exchange failed: {ResponseContent}", responseContent);
-                throw new Exception($"Token exchange failed with status {response.StatusCode}");
+                _logger.LogError("Token exchange failed with status {StatusCode}: {ResponseContent}", response.StatusCode, responseContent);
+                throw new Exception($"Token exchange failed with status {response.StatusCode}: {responseContent}");
             }
             
+            _logger.LogInformation("Deserializing token response");
             var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
             });
             
-            return tokenResponse ?? throw new Exception("Failed to parse token response");
+            if (tokenResponse == null)
+            {
+                _logger.LogError("Failed to deserialize token response");
+                throw new Exception("Failed to parse token response");
+            }
+            
+            _logger.LogInformation("--- TOKEN REQUEST SUCCESS ---");
+            return tokenResponse;
         }
 
         private async Task<UserProfile> GetUserProfileAsync(string accessToken)
@@ -122,7 +169,13 @@ namespace Nyssa.Mcp.Server.Services
 
         public string BuildAuthorizationUrl()
         {
+            _logger.LogInformation("--- AUTHORIZATION URL BUILD START ---");
+            
             var state = Guid.NewGuid().ToString("N")[..16];
+            
+            _logger.LogInformation("Generated state: {State}", state);
+            _logger.LogInformation("Client ID: {ClientId}", _config.ClientId);
+            _logger.LogInformation("Redirect URI: {RedirectUri}", _config.RedirectUri);
             
             var queryParams = new Dictionary<string, string>
             {
@@ -136,7 +189,12 @@ namespace Nyssa.Mcp.Server.Services
             var queryString = string.Join("&", 
                 queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
             
-            return $"https://api.workos.com/user_management/authorize?{queryString}";
+            var authUrl = $"https://api.workos.com/user_management/authorize?{queryString}";
+            
+            _logger.LogInformation("Built authorization URL: {AuthUrl}", authUrl);
+            _logger.LogInformation("--- AUTHORIZATION URL BUILD SUCCESS ---");
+            
+            return authUrl;
         }
     }
 }

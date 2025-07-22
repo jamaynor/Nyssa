@@ -10,15 +10,18 @@ namespace Nyssa.Wasm.Features.Authentication
         private readonly IJSRuntime _jsRuntime;
         private readonly AuthenticationStateService _authStateService;
         private readonly McpAuthenticationService _mcpAuthService;
+        private readonly CustomAuthenticationStateProvider _authStateProvider;
 
         public OidcAuthenticationService(
             IJSRuntime jsRuntime,
             AuthenticationStateService authStateService,
-            McpAuthenticationService mcpAuthService)
+            McpAuthenticationService mcpAuthService,
+            CustomAuthenticationStateProvider authStateProvider)
         {
             _jsRuntime = jsRuntime;
             _authStateService = authStateService;
             _mcpAuthService = mcpAuthService;
+            _authStateProvider = authStateProvider;
         }
 
         public async Task LoginAsync()
@@ -70,6 +73,9 @@ namespace Nyssa.Wasm.Features.Authentication
                 // Update authentication state
                 await _authStateService.SetAuthenticatedAsync(userProfile, result.AccessToken, result.ExpiresAt);
                 
+                // Notify the authentication state provider
+                await _authStateProvider.MarkUserAsAuthenticated();
+                
                 Console.WriteLine($"Successfully authenticated user: {userProfile.Email}");
             }
             catch (Exception ex)
@@ -82,6 +88,7 @@ namespace Nyssa.Wasm.Features.Authentication
         public async Task LogoutAsync()
         {
             await _authStateService.LogoutAsync();
+            _authStateProvider.MarkUserAsLoggedOut();
         }
     }
 }

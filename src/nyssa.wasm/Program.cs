@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Components.Authorization;
 using Nyssa.Wasm;
 using Nyssa.Wasm.Features.Authentication;
 using Nyssa.Mcp.Client.Services;
@@ -20,10 +21,28 @@ builder.Configuration.AddJsonStream(configStream);
 // 3. Register OidcConfiguration with the options pattern (correct for Blazor WASM)
 builder.Services.Configure<OidcConfiguration>(section => builder.Configuration.GetSection("Oidc").Bind(section));
 
-// 4. Register other services
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddHttpClient<McpAuthenticationService>();
+// 4. Authentication Services
 builder.Services.AddScoped<AuthenticationStateService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<OidcAuthenticationService>();
 
-await builder.Build().RunAsync();
+// 5. Authorization Services
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+
+// 6. HTTP Client Services
+builder.Services.AddHttpClient<McpAuthenticationService>(client =>
+{
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+var app = builder.Build();
+
+// Initialize authentication state on startup
+var authStateService = app.Services.GetRequiredService<AuthenticationStateService>();
+await authStateService.InitializeAsync();
+
+await app.RunAsync();

@@ -7,5 +7,7 @@ namespace Nyssa.Mcp.Server.Models
         public int? ExpiresIn { get; set; }
         public string? RefreshToken { get; set; }
         public string? IdToken { get; set; }
+        public WorkOSUser? User { get; set; }
+        public string? AuthenticationMethod { get; set; }
     }
 }

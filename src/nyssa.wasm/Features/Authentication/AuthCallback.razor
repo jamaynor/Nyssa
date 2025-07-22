@@ -1,0 +1,73 @@
+@page "/auth/callback"
+@inject OidcAuthenticationService AuthService
+@inject NavigationManager Navigation
+@inject AuthenticationStateService AuthStateService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Console.WriteLine("=== AUTH CALLBACK START ===");
+            Console.WriteLine($"Current URL: {Navigation.Uri}");
+            
+            // Get the authorization code from the URL
+            var uri = new Uri(Navigation.Uri);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var code = query["code"];
+            var state = query["state"];
+            var error = query["error"];
+
+            Console.WriteLine($"Authorization code: {code}");
+            Console.WriteLine($"State: {state}");
+            Console.WriteLine($"Error: {error}");
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                Console.WriteLine($"OAuth error received: {error}");
+                Navigation.NavigateTo("/login-error", replace: true);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(code))
+            {
+                Console.WriteLine("No authorization code received - redirecting to home");
+                Navigation.NavigateTo("/", replace: true);
+                return;
+            }
+
+            Console.WriteLine("Starting token exchange...");
+            // Exchange the code for tokens
+            await AuthService.ExchangeCodeForTokenAsync(code);
+            
+            Console.WriteLine("Token exchange successful - redirecting to /app");
+            // Redirect to the app dashboard
+            Navigation.NavigateTo("/app", replace: true);
+            Console.WriteLine("=== AUTH CALLBACK SUCCESS ===");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("=== AUTH CALLBACK ERROR ===");
+            Console.WriteLine($"Authentication callback failed: {ex.Message}");
+            Console.WriteLine($"Exception type: {ex.GetType().Name}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            Navigation.NavigateTo("/login-error", replace: true);
+        }
+    }
+}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Completing sign-in...
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Please wait while we complete your authentication.
+            </p>
+        </div>
+        <div class="flex justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        </div>
+    </div>
+</div>

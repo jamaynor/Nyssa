@@ -1,0 +1,93 @@
+<section id="contact" class="section">
+    <div class="container-custom">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Get In Touch
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Ready to transform your authorization system? Let's talk about your requirements.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Why Choose Nyssa?</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <h4 class="font-semibold">Enterprise Ready</h4>
+                                <p class="text-gray-600">Battle-tested in production environments</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <h4 class="font-semibold">24/7 Support</h4>
+                                <p class="text-gray-600">Expert help whenever you need it</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <h4 class="font-semibold">Free Trial</h4>
+                                <p class="text-gray-600">30 days to test all features</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <form @onsubmit="HandleSubmit" @onsubmit:preventDefault="true">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Name</label>
+                                <input type="text" @bind="contactForm.Name" class="form-input" placeholder="Your name" required />
+                            </div>
+                            <div>
+                                <label class="form-label">Email</label>
+                                <input type="email" @bind="contactForm.Email" class="form-input" placeholder="your@email.com" required />
+                            </div>
+                            <div>
+                                <label class="form-label">Company</label>
+                                <input type="text" @bind="contactForm.Company" class="form-input" placeholder="Your company" />
+                            </div>
+                            <div>
+                                <label class="form-label">Message</label>
+                                <textarea @bind="contactForm.Message" class="form-input" rows="4" placeholder="Tell us about your needs" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full">
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private ContactFormModel contactForm = new();
+
+    private async Task HandleSubmit()
+    {
+        // Handle form submission
+        await Task.CompletedTask;
+    }
+
+    private class ContactFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Company { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,19 @@
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="typeof(Nyssa.Wasm.Features.Shared.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="typeof(Nyssa.Wasm.Features.Shared.MainLayout)">
+            <div class="min-h-screen flex items-center justify-center">
+                <div class="text-center">
+                    <h1 class="text-6xl font-bold text-gray-900 mb-4">404</h1>
+                    <p class="text-xl text-gray-600 mb-8">Sorry, there's nothing at this address.</p>
+                    <a href="/" class="btn btn-primary">Go Home</a>
+                </div>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>
+@using Nyssa.Wasm.Features.Authentication

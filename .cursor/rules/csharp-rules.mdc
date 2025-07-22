@@ -1,0 +1,84 @@
+---
+description: Core C# coding standards and conventions
+globs: "**/*.cs"
+---
+
+# C# Development Rules
+
+You are an expert C# developer using .NET 9 with modern language features and explicit coding practices.
+
+## Language Features and Syntax
+- Target .NET 9 and use modern C# language features including records, pattern matching, and nullable reference types
+- Use `var` when the type is obvious from the right-hand side of the assignment
+- Use expression-bodied members for simple methods and properties (`public string Name => _name;`)
+- Use file-scoped namespaces (`namespace MyApp;` instead of braces)
+- Enable nullable reference types and handle null values explicitly
+- Use collection expressions `[item1, item2]` instead of `new[] { item1, item2 }`
+
+## Records and Data Types
+- Use records for DTOs and value objects
+- Prefer record initialization syntax for immutable data structures
+- Implement proper equality and immutability patterns with records
+
+## Error Handling
+- Use Result<TPayloadType> pattern for all business operations that can fail
+    - var result = SomeMethod(parameter1, parameter2);
+    - if (result.IsSuccess){ .. do something }
+    - else { ... do something else }
+- Reserve exceptions for truly exceptional cases (system failures, programming errors)
+- Return explicit error results rather than null or throwing exceptions
+
+## Async Programming
+- Include CancellationToken parameters only when cancellation makes logical sense
+- Use ValueTask instead of Task when appropriate for performance
+- Use proper async/await patterns throughout the application
+- Avoid async void except for event handlers
+
+## Collections and Parameters
+- Use IEnumerable<T> for collection parameters when only enumeration is needed
+- Prefer immutable collection patterns where appropriate
+- Use collection expressions for array and list initialization
+
+## Dependency Injection
+- Use constructor injection exclusively
+- Avoid service locator patterns or property injection
+- Keep constructor dependencies minimal and focused
+
+## Validation
+- Use FluentValidation for input validation and business rule validation
+- Implement validation at appropriate boundaries (API controllers, domain services)
+- Create reusable validation rules for common patterns
+- Return validation errors through Result<TPayloadType> pattern
+
+## Performance Optimizations
+- Use StringBuilder for string concatenation operations
+- Use ReadOnlySpan<char> for string operations that don't require string allocation
+- Prefer ValueTask over Task when the operation may complete synchronously
+- Avoid unnecessary allocations in hot paths
+
+## Code Style and Clarity
+- Prefer explicit code over concise code when it improves readability
+- Use descriptive variable and method names that clearly express intent
+- Write code that is self-documenting through clear naming and structure
+
+## Method and Property Design
+- Use expression-bodied members for simple getters and computed properties
+- Implement proper encapsulation with private setters and explicit methods
+- Keep methods focused on a single responsibility
+
+## Naming Conventions
+- Use PascalCase for classes, methods, properties, and public members
+- Use camelCase for local variables, and parameters
+- Prefix private fields with underscore (_fieldName)
+
+## Type Safety
+- Leverage the type system to catch errors at compile time
+- Use strongly-typed identifiers instead of primitive types when appropriate
+- Implement proper null-checking patterns with nullable reference types
+- Avoid dynamic typing unless absolutely necessary
+
+## Code Organization
+- Organize code by feature or domain rather than technical layers when possible
+- Keep related functionality grouped together
+- Use meaningful folder structures that reflect the application architecture
+- Separate concerns appropriately across classes and methods

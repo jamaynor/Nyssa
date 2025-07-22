@@ -1,0 +1,92 @@
+---
+description: Authorization and security patterns using decorators and domain services
+globs: "**/*.cs"
+---
+
+# Authorization and Security Rules
+
+You are an expert in implementing secure, auditable authorization using .NET policies and domain-driven security patterns.
+
+## Two-Layer Authorization Architecture
+- Technical permissions handled by service decorators using .NET authorization policies
+- Business authorization rules handled by domain services with context-aware logic
+- Clear separation between "can user perform action" vs "can user perform action on this specific resource"
+- Both layers must pass for operation to succeed
+
+## Authorization Decorators
+- Create specific authorization decorators per service type rather than generic decorators
+- Apply decorators automatically through dependency injection registration
+- Decorators check technical permissions before delegating to actual service implementation
+- Use static user context access within Blazor applications for current user information
+
+## Permission-Based Security
+- Use permission-based authorization with resource.action format (patient.read, patient.write, user.admin)
+- Map permissions to .NET authorization policies with matching names
+- Define permissions as granular actions on specific resource types
+- Avoid role-based authorization in favor of explicit permission checking
+
+## Method-Level Authorization
+- Use attributes to declare required permissions on service methods for auditability
+- Map permission strings directly to .NET policy names for consistency
+- Keep permission declarations visible and close to the methods they protect
+- Prefer simplicity and transparency for HIPAA compliance auditing
+
+## Authorization Result Handling
+- Return Result<TPayloadType> for authorization failures instead of throwing exceptions
+- Use HTTP-style error codes for authorization failures (4xx-5xx range)
+- Provide clear, actionable error messages for authorization failures
+- Never expose sensitive information in authorization error messages
+
+## Audit Logging
+- Log all authorization attempts (both successful and failed) for compliance
+- Include user identity, requested resource, action, and outcome in audit logs
+- Use structured logging with consistent fields for authorization events
+- Ensure audit logs are tamper-proof and retained per regulatory requirements
+
+## .NET Policy Integration
+- Define authorization policies that map directly to permission strings
+- Use IAuthorizationService within authorization decorators for permission checking
+- Keep policies simple and focused on permission verification only
+- Handle complex business rules in domain services, not in policy handlers
+
+## Domain Service Security
+- Domain services perform context-aware authorization checks as business rules
+- Pass validated user context to domain services for business authorization decisions
+- Implement business rules like "only assigned doctor can update patient diagnosis"
+- Keep business authorization separate from technical permission checking
+
+## Static User Context
+- Use static context pattern for accessing current user information in Blazor
+- Ensure user context is properly scoped to avoid cross-user data leakage
+- Include user identity, permissions, and tenant information in context
+- Handle user context expiration and refresh mechanisms securely
+
+## Security Decorator Implementation
+- Register authorization decorators in dependency injection container automatically
+- Ensure decorators are applied before any business logic execution
+- Handle authorization failures gracefully without exposing system internals
+- Provide consistent error responses across all decorated services
+
+## Permission Hierarchy and Inheritance
+- Define clear permission hierarchies for administrative and supervisory roles
+- Handle permission inheritance through .NET policy requirements when appropriate
+- Avoid complex permission calculations in favor of explicit permission grants
+- Document permission relationships clearly for security auditing
+
+## Healthcare-Specific Security Patterns
+- Implement tenant-aware authorization to prevent cross-organization data access
+- Ensure PHI access is always logged and authorized appropriately
+- Apply principle of least privilege for all healthcare data access
+- Handle emergency access scenarios with proper audit trails and approval workflows
+
+## Testing and Validation
+- Create unit tests for authorization decorators with mock user contexts
+- Test both successful authorization and failure scenarios thoroughly
+- Validate that business authorization rules work correctly with domain services
+- Ensure authorization works properly across tenant boundaries
+
+## Performance Considerations
+- Cache authorization decisions when appropriate to reduce overhead
+- Minimize database calls during authorization checking
+- Use efficient permission lookup mechanisms for high-volume operations
+- Consider authorization performance impact on user experience

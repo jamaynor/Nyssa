@@ -1,0 +1,28 @@
+# Tailwind CSS Styling Guidelines
+
+## Core Principles
+- Mobile-first responsive design
+- Utility-first approach with component extraction when needed
+- Consistent spacing scale (4, 8, 12, 16, 24, 32, 48, 64px)
+- Design system approach with custom CSS properties for brand colors
+
+## Class Organization Order
+1. Layout (flex, grid, block, etc.)
+2. Positioning (relative, absolute, etc.)
+3. Size (w-, h-, max-w-, etc.)
+4. Spacing (m-, p-, gap-, etc.)
+5. Typography (text-, font-, leading-, etc.)
+6. Colors (bg-, text-, border-, etc.)
+7. Effects (shadow-, opacity-, etc.)
+8. Responsive prefixes last
+
+## Component Structure
+- Extract repeated patterns into components
+- Use @apply for complex utility combinations
+- Prefer semantic class names for complex components
+- Keep utility classes for one-off styling
+
+## Responsive Strategy
+- Default mobile styles first
+- Use sm:, md:, lg:, xl: progressively
+- Test at 375px, 768px, 1024px, 1440px breakpoints

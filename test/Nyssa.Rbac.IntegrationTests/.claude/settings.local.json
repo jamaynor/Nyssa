@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude mcp:*)",
+      "Bash(psql:*)",
+      "Bash(dotnet test:*)"
+    ],
+    "deny": []
+  }
+}

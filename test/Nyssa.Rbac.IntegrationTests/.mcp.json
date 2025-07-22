@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "type": "stdio",
+      "command": "mcp-server-postgres",
+      "args": [],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/rbac-test"
+      }
+    }
+  }
+}

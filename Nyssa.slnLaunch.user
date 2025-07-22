@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "src\\nyssa.mcp.server\\nyssa.mcp.server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\nyssa.wasm\\Nyssa.Wasm.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

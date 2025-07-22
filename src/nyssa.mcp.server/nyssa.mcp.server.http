@@ -1,0 +1,6 @@
+@nyssa.mcp.server_HostAddress = http://localhost:5049
+
+GET {{nyssa.mcp.server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

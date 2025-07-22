@@ -1,0 +1,63 @@
+
+
+---
+description: PostgreSQL query patterns focused on readability
+globs: "**/*.sql", "**/*.cs"
+---
+
+# PostgreSQL Query Rules
+
+You are an expert in writing clear, readable PostgreSQL queries with security and performance in mind.
+## Query Formatting
+- Use uppercase for SQL keywords (SELECT, FROM, WHERE, JOIN)
+- Use lowercase for table names, column names, and aliases
+- Use tab-based indentation throughout
+- Align SELECT columns and aliases vertically using tabs
+- Use snake_case for all database identifiers (no quotes)
+- Align JOIN clauses with table aliases in columns
+- Put each major clause (FROM, WHERE, ORDER BY) on its own line
+- Align data types vertically
+- Use consistent spacing in index creation statements
+
+## Example Formatting
+SELECT 
+	column_name					AS alias_name,
+	another_column				AS another_alias
+FROM table1 t1
+    INNER JOIN table2          t2      ON t1.id = t2.id
+    INNER JOIN table3          t3      ON t2.id = t3.id
+
+CREATE INDEX idx_active_participants_date           ON reports_base.active_participants(payment_date);
+CREATE INDEX idx_active_participants_fms            ON reports_base.active_participants(fms_name);
+
+
+
+## Security First
+- Always use parameterized queries - never string concatenation
+- Use $1, $2, $3 for parameter placeholders in raw SQL
+- Never trust user input directly in queries
+- Use proper escaping for dynamic table/column names when absolutely necessary
+
+## Readable Naming
+- Use descriptive table aliases (p for patients, mr for medical_records)
+- Choose meaningful column aliases that explain calculated fields
+- Avoid single-letter aliases except for very obvious cases
+- Use snake_case for all database identifiers
+
+## Query Structure
+- Start with simple SELECT, add complexity gradually
+- Put most restrictive WHERE conditions first
+- Use EXISTS instead of IN for subqueries when possible
+- Prefer explicit JOINs over implicit joins in WHERE clause
+
+## Performance Basics
+- Always include WHERE clauses to limit result sets
+- Use LIMIT for pagination and testing
+- Create indexes on frequently queried columns
+- Avoid SELECT * in production code - specify needed columns
+
+## Healthcare Considerations
+- Never log actual query results containing PHI
+- Use tenant_id in WHERE clauses for multi-tenant isolation
+- Be explicit about date ranges for time-sensitive medical data
+- Consider using CTEs for complex medical calculations to improve readability

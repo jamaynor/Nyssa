@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:workos.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(dotnet build)",
+      "WebFetch(domain:www.nuget.org)",
+      "WebFetch(domain:fun-carriage-30-staging.authkit.app)",
+      "WebFetch(domain:api.workos.com)",
+      "Bash(cd \"C:\\Workspace\\repos\\jamaynor\\Nyssa\\src\")",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(del \"C:\\Workspace\\repos\\jamaynor\\Nyssa\\src\\nyssa.mcp.client\\Class1.cs\")",
+      "Bash(rm:*)",
+      "Bash(dotnet add reference:*)",
+      "Bash(dotnet run)",
+      "Bash(taskkill:*)",
+      "Bash(dotnet run:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": []
+  }
+}

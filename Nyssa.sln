@@ -1,0 +1,55 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B8F12345-1234-5678-9ABC-DEF123456789}"
+	ProjectSection(SolutionItems) = preProject
+		test-errors.md = test-errors.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nyssa.Wasm", "src\nyssa.wasm\Nyssa.Wasm.csproj", "{AD0A9CD0-9890-B06B-1370-ACC75C9363E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nyssa.Rbac.IntegrationTests", "test\Nyssa.Rbac.IntegrationTests\Nyssa.Rbac.IntegrationTests.csproj", "{C9D12345-5678-9ABC-DEF1-23456789ABCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nyssa.mcp.client", "src\nyssa.mcp.client\nyssa.mcp.client.csproj", "{C432C6DB-0E0F-1FED-747D-C3B77A8BB1CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nyssa.mcp.server", "src\nyssa.mcp.server\nyssa.mcp.server.csproj", "{975270D7-9AD9-5290-94B4-41E11BC96288}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD0A9CD0-9890-B06B-1370-ACC75C9363E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD0A9CD0-9890-B06B-1370-ACC75C9363E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD0A9CD0-9890-B06B-1370-ACC75C9363E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD0A9CD0-9890-B06B-1370-ACC75C9363E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9D12345-5678-9ABC-DEF1-23456789ABCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9D12345-5678-9ABC-DEF1-23456789ABCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9D12345-5678-9ABC-DEF1-23456789ABCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9D12345-5678-9ABC-DEF1-23456789ABCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C432C6DB-0E0F-1FED-747D-C3B77A8BB1CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C432C6DB-0E0F-1FED-747D-C3B77A8BB1CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C432C6DB-0E0F-1FED-747D-C3B77A8BB1CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C432C6DB-0E0F-1FED-747D-C3B77A8BB1CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{975270D7-9AD9-5290-94B4-41E11BC96288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{975270D7-9AD9-5290-94B4-41E11BC96288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{975270D7-9AD9-5290-94B4-41E11BC96288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{975270D7-9AD9-5290-94B4-41E11BC96288}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AD0A9CD0-9890-B06B-1370-ACC75C9363E8} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{C9D12345-5678-9ABC-DEF1-23456789ABCD} = {B8F12345-1234-5678-9ABC-DEF123456789}
+		{C432C6DB-0E0F-1FED-747D-C3B77A8BB1CD} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{975270D7-9AD9-5290-94B4-41E11BC96288} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6CF22501-77CC-4A8E-802D-CB6CB30144B4}
+	EndGlobalSection
+EndGlobal

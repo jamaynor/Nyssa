@@ -1,0 +1,91 @@
+---
+description: Blazor WebAssembly component patterns and architecture
+globs: "**/*.razor", "**/*.razor.cs"
+---
+
+# Blazor WebAssembly Development Rules
+
+You are an expert Blazor WebAssembly developer focused on clean component architecture and separation of concerns.
+
+## Component Architecture
+- Use razor components (.razor files) for all UI components
+- All components and pages must have corresponding view models to manage their state
+- Prefer composition over inheritance for component reusability
+- Keep components focused on presentation logic only
+- Components should be reusable and not tied to specific business contexts
+
+## View Model Structure and Naming
+- View models are defined in nested files underneath the main component/page files (e.g., Page.razor.cs, Component.razor.cs)
+- View models follow the naming convention: [PageName]ViewModel or [ComponentName]ViewModel
+- View models should contain only properties and methods needed for component rendering and interaction
+- View models should not contain business logic or API calls
+
+## Component Parameters and Communication
+- Use simple properties for component parameters rather than complex objects
+- Follow parent-child communication pattern: data flows down via parameters, events flow up via EventCallback<T>
+- Avoid direct component-to-component communication outside parent-child relationships
+- Pass only the specific data needed rather than entire objects when possible
+
+## State Management
+- Components should not manage application state directly
+- Inject state services into pages only, not individual components
+- State changes should flow from state service through view model to component
+
+## API and Business Logic Separation
+- Components must never make direct API calls
+- Components raise events to notify parent pages of user actions
+- Pages handle all API calls and business logic coordination
+
+## Authorization and Security
+- Components should contain no authorization logic
+- Authorization is handled exclusively at the page level
+- Components should be usable in any authorized context
+- Use AuthorizeView and [Authorize] attributes on pages, not components
+
+## Styling and CSS
+- Use Tailwind CSS for all component styling
+- Define shared CSS classes in app.css for common UI elements (cards, navigation, sidebars, etc.)
+- Use consistent styling patterns across all components
+- Leverage Tailwind utility classes for responsive design
+
+## Loading States and User Feedback
+- Components should display loading spinners based on view model status properties
+- Loading state should be managed by the state service and reflected in view models
+- Use consistent loading indicators across all components
+- Components should react to state changes automatically
+
+## Error Handling
+- Handle validation errors within components using FluentValidation patterns
+- All non-validation errors should be handled by error boundaries at the page level
+- Components should not display system errors directly
+- Use consistent error messaging patterns across the application
+
+## View Models and Data Binding
+- Each component should have a dedicated view model in its .razor.cs file
+- View models should contain only properties needed for component rendering
+- Use two-way data binding (@bind) appropriately for form inputs
+- Implement INotifyPropertyChanged when dynamic updates are needed
+
+## Component Lifecycle
+- Use OnInitializedAsync for component initialization
+- Implement IDisposable for components that need cleanup
+- Use OnParametersSetAsync when components need to react to parameter changes
+- Call StateHasChanged() only when necessary to trigger re-renders
+
+## Event Handling
+- Use EventCallback<T> for strongly-typed component events
+- Event handlers should be async when they trigger state changes
+- Raise events for all user actions that require business logic
+- Keep event payloads simple and focused
+
+## Performance Considerations
+- Use @key directive for components in dynamic lists
+- Implement ShouldRender() to prevent unnecessary re-renders when appropriate
+- Minimize the data passed between components
+- Use CSS isolation for component-specific styling when needed
+
+## Testing and Maintainability
+- Design components to be easily testable in isolation
+- Separate presentation logic from business logic completely
+- Use dependency injection for testable component dependencies
+- Write components that can be rendered without external dependencies

@@ -17,7 +17,19 @@
       "Bash(taskkill:*)",
       "Bash(dotnet run:*)",
       "Bash(curl:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(find:*)",
+      "Bash(cmd /c:*)",
+      "Bash(timeout 30 dotnet test --filter \"Authorization_Should_Block_Access_Without_Required_Permissions\" --verbosity normal)",
+      "Bash(timeout:*)",
+      "Bash(psql:*)",
+      "Bash(docker-compose:*)",
+      "Bash(PGPASSWORD=postgres psql -h localhost -U postgres -d nyssa-dev -c \"SELECT 1;\" -t)",
+      "Bash(PGPASSWORD=postgres psql -h localhost -U postgres -d nyssa-dev -c \"SELECT schema_name FROM information_schema.schemata WHERE schema_name = ''authz'';\" -t)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

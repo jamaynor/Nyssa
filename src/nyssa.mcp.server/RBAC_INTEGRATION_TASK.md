@@ -373,6 +373,69 @@ src/nyssa.mcp.server/
 └── Program.cs (updated with MassTransit)
 ```
 
+## Implementation Task Breakdown
+
+### 🚀 **Phase 1: Core MassTransit Integration** (High Priority)
+1. **Phase 1.1**: Configure MassTransit bus with RabbitMQ/In-Memory transport
+2. **Phase 1.2**: Create core message models and contracts for authentication
+3. **Phase 1.3**: Create core message models and contracts for authorization
+4. **Phase 1.4**: Implement basic MassTransit message handlers
+
+### 🔗 **Phase 2: RBAC Message Integration** (Medium Priority)
+5. **Phase 2.1**: Implement user resolution messages and handlers
+6. **Phase 2.2**: Implement permission resolution messages and handlers
+7. **Phase 2.3**: Implement organization resolution messages and handlers
+8. **Phase 2.4**: Implement token management messages and handlers
+
+### 🔐 **Phase 3: Authorization & Security** (Medium/Low Priority)
+9. **Phase 3.1**: Create JWT service for scoped token generation
+10. **Phase 3.2**: Enhance WorkOS authentication service with RBAC integration
+11. **Phase 3.3**: Implement MCP task authorization middleware
+12. **Phase 3.4**: Add token validation and blacklisting via MassTransit
+13. **Phase 3.5**: Implement audit logging integration via MassTransit
+14. **Phase 3.6**: Add security hardening and message encryption
+
+### 📋 **Recommended Approach**
+**Start with Phase 1** - it establishes the foundational messaging infrastructure that everything else depends on. Each task builds on the previous ones, so following the sequence will minimize integration issues.
+
+## Error Handling Requirements
+
+### Result Pattern Implementation
+All operations in this RBAC integration **MUST** use the Result pattern for error handling as defined in `.cursor/rules/result-pattern-rules.md`:
+
+- **All methods that can fail** should return `Result<T, ErrorMessage>` instead of throwing exceptions
+- **ErrorMessage structure**: Contains `Code` (HTTP-style), `Text` (technical), and `UserFriendlyText` (user-facing)
+- **Error code categories** for RBAC operations:
+  - `4001-4099`: Authentication failures (WorkOS, token validation)
+  - `4100-4199`: Authorization failures (permission checks, role validation)
+  - `4200-4299`: RBAC validation errors (user resolution, organization membership)
+  - `5001-5099`: Database operation failures (PostgreSQL connectivity, query failures)
+  - `5100-5199`: Message bus failures (MassTransit connectivity, message processing)
+  - `5200-5299`: External service failures (WorkOS API, JWT service)
+
+### Result Pattern Usage Examples
+```csharp
+// Service method signature
+public async Task<Result<ScopedToken, ErrorMessage>> GenerateScopedTokenAsync(string workosUserId, string organizationId)
+
+// Error handling in message handlers
+public async Task<Result<UserPermissions, ErrorMessage>> Handle(GetUserPermissionsRequest request)
+{
+    var userResult = await _userRepository.GetUserByExternalIdAsync(request.WorkOSUserId);
+    if (!userResult.Success)
+        return userResult.Errors; // Propagate repository errors
+
+    return await _permissionService.ResolveUserPermissionsAsync(userResult.Value.Id, request.OrganizationId);
+}
+
+// Result chaining with Then()
+var result = await ResolveUserAsync(workosUserId)
+    .Then(user => GetUserOrganizationsAsync(user.Id))
+    .Then(orgs => SelectPrimaryOrganizationAsync(orgs))
+    .Then(org => ResolveUserPermissionsAsync(user.Id, org.Id))
+    .Then(permissions => GenerateScopedTokenAsync(user, org, permissions));
+```
+
 ## Dependencies Required
 
 ### NuGet Packages
@@ -390,4 +453,4 @@ src/nyssa.mcp.server/
 - **MassTransit Transport**: RabbitMQ or In-Memory
 - **Message Queue Settings**: Retry policies, circuit breakers
 
-This implementation will transform the basic authentication system into a comprehensive, secure, and scalable authorization system that leverages MassTransit for reliable message-based communication with the PostgreSQL RBAC database. 
+This implementation will transform the basic authentication system into a comprehensive, secure, and scalable authorization system that leverages MassTransit for reliable message-based communication with the PostgreSQL RBAC database. All operations will use the Result pattern for robust, explicit error handling. 

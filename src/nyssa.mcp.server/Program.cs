@@ -1,5 +1,6 @@
 using Nyssa.Mcp.Server.Models;
 using Nyssa.Mcp.Server.Services;
+using Nyssa.Mcp.Server.Configuration;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,9 +54,48 @@ builder.Services.Configure<OidcConfiguration>(options =>
     logger?.LogInformation("=== END CONFIGURATION DEBUG ===");
 });
 
-// Add services
+// Add MassTransit message bus
+builder.Services.AddRbacMassTransit(builder.Configuration);
+builder.Services.AddRbacMessageClients();
+
+// Add PostgreSQL database services
+builder.Services.AddRbacDatabase(builder.Configuration);
+
+// Add JWT service for scoped token generation
+builder.Services.Configure<Nyssa.Mcp.Server.Services.JwtOptions>(
+    builder.Configuration.GetSection(Nyssa.Mcp.Server.Services.JwtOptions.SectionName));
+builder.Services.AddSingleton<Nyssa.Mcp.Server.Services.IJwtService>(serviceProvider =>
+{
+    var options = builder.Configuration.GetSection(Nyssa.Mcp.Server.Services.JwtOptions.SectionName)
+        .Get<Nyssa.Mcp.Server.Services.JwtOptions>() ?? new();
+    var logger = serviceProvider.GetRequiredService<ILogger<Nyssa.Mcp.Server.Services.JwtService>>();
+    return new Nyssa.Mcp.Server.Services.JwtService(options, logger);
+});
+
+// Add existing services
 builder.Services.AddHttpClient<WorkOSAuthenticationService>();
 builder.Services.AddScoped<WorkOSAuthenticationService>();
+
+// Add enhanced authentication service
+builder.Services.AddScoped<IEnhancedAuthenticationService, EnhancedAuthenticationService>();
+
+// Add MCP authorization services
+builder.Services.AddSingleton<Nyssa.Mcp.Server.Authorization.IMcpAuthorizationService, Nyssa.Mcp.Server.Authorization.McpAuthorizationService>();
+builder.Services.AddSingleton<Nyssa.Mcp.Server.Authorization.McpAuthorizationMiddleware>();
+
+// Add MCP server and tools
+builder.Services.AddSingleton<Nyssa.Mcp.Server.Tools.EnhancedAuthenticationTools>();
+
+// Add session services
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 // Add CORS for WASM
 builder.Services.AddCors(options =>
@@ -71,11 +111,27 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Initialize MCP tools with services using a scope
+using (var scope = app.Services.CreateScope())
+{
+    var authService = scope.ServiceProvider.GetRequiredService<IEnhancedAuthenticationService>();
+    var authorizationService = scope.ServiceProvider.GetRequiredService<Nyssa.Mcp.Server.Authorization.IMcpAuthorizationService>();
+    var toolsLogger = scope.ServiceProvider.GetRequiredService<ILogger<Nyssa.Mcp.Server.Tools.EnhancedAuthenticationTools>>();
+
+    // Initialize enhanced authentication tools
+    Nyssa.Mcp.Server.Tools.EnhancedAuthenticationTools.Initialize(authService, authorizationService, toolsLogger);
+
+    // Initialize legacy authentication tools for backward compatibility
+    var legacyAuthService = scope.ServiceProvider.GetRequiredService<WorkOSAuthenticationService>();
+    Nyssa.Mcp.Server.Tools.AuthenticationTools.Initialize(legacyAuthService);
+}
+
 // Configure middleware
 app.UseCors();
+app.UseSession();
 
 // API endpoints
-app.MapGet("/api/auth/url", async (WorkOSAuthenticationService authService, ILogger<Program> logger) =>
+app.MapGet("/api/auth/url", (IEnhancedAuthenticationService authService, ILogger<Program> logger) =>
 {
     try
     {
@@ -98,14 +154,14 @@ app.MapGet("/api/auth/url", async (WorkOSAuthenticationService authService, ILog
 
 var exchangeRequestCount = 0;
 
-app.MapPost("/api/auth/exchange", async (HttpRequest request, WorkOSAuthenticationService authService, ILogger<Program> logger) =>
+app.MapPost("/api/auth/exchange", async (HttpRequest request, IEnhancedAuthenticationService authService, ILogger<Program> logger) =>
 {
     var currentRequest = Interlocked.Increment(ref exchangeRequestCount);
     
     try
     {
-        logger.LogInformation("=== TOKEN EXCHANGE REQUEST #{RequestNumber} ===", currentRequest);
-        logger.LogInformation("Received token exchange request #{RequestNumber}", currentRequest);
+        logger.LogInformation("=== ENHANCED TOKEN EXCHANGE REQUEST #{RequestNumber} ===", currentRequest);
+        logger.LogInformation("Received enhanced token exchange request #{RequestNumber}", currentRequest);
         logger.LogInformation("Content-Type: {ContentType}", request.ContentType);
         logger.LogInformation("Content-Length: {ContentLength}", request.ContentLength);
         
@@ -125,25 +181,136 @@ app.MapPost("/api/auth/exchange", async (HttpRequest request, WorkOSAuthenticati
             return Results.BadRequest(new { error = "Authorization code is required" });
         }
 
-        logger.LogInformation("Calling WorkOS authentication service to exchange code");
-        var result = await authService.ExchangeCodeForTokenAsync(code);
+        // Extract client information for audit logging
+        var ipAddress = request.HttpContext.Connection.RemoteIpAddress?.ToString();
+        var userAgent = request.Headers.UserAgent.ToString();
+        var sessionId = request.HttpContext.Session?.Id ?? Guid.NewGuid().ToString();
+
+        logger.LogInformation("Calling enhanced authentication service to exchange code and generate scoped token");
+        var result = await authService.AuthenticateWithScopedTokenAsync(code, ipAddress, userAgent, sessionId);
         
-        logger.LogInformation("Token exchange result - Success: {IsSuccess}, User: {UserId}, Token Length: {TokenLength}", 
-            result.IsSuccess, 
-            result.User?.Id ?? "null", 
-            result.AccessToken?.Length ?? 0);
-            
-        if (!result.IsSuccess)
+        if (!result.Success)
         {
-            logger.LogWarning("Token exchange failed: {Error}", result.ErrorMessage);
+            logger.LogWarning("Enhanced authentication failed: {Errors}", string.Join(", ", result.Errors.Select(e => e.Text)));
+            return Results.BadRequest(new { 
+                error = result.Errors.FirstOrDefault()?.UserFriendlyText ?? "Authentication failed",
+                code = result.Errors.FirstOrDefault()?.Code ?? 4000
+            });
         }
+
+        var authResult = result.Value;
+        logger.LogInformation("Enhanced authentication successful - User: {UserId}, IsNew: {IsNewUser}, Permissions: {PermissionCount}, Token Expires: {ExpiresAt}",
+            authResult.User.Id,
+            authResult.IsNewUser,
+            authResult.Permissions.Permissions.Count,
+            authResult.ScopedToken.ExpiresAt);
         
-        logger.LogInformation("=== TOKEN EXCHANGE RESPONSE ===");
-        return Results.Ok(result);
+        logger.LogInformation("=== ENHANCED TOKEN EXCHANGE RESPONSE ===");
+        
+        // Return the scoped token and minimal user info
+        return Results.Ok(new 
+        {
+            access_token = authResult.ScopedToken.Token,
+            token_type = "Bearer",
+            expires_in = (int)(authResult.ScopedToken.ExpiresAt - DateTime.UtcNow).TotalSeconds,
+            expires_at = authResult.ScopedToken.ExpiresAt,
+            user = new
+            {
+                id = authResult.User.Id,
+                external_id = authResult.User.ExternalId,
+                email = authResult.User.Email,
+                first_name = authResult.User.FirstName,
+                last_name = authResult.User.LastName,
+                name = $"{authResult.User.FirstName} {authResult.User.LastName}".Trim()
+            },
+            organization = new 
+            {
+                id = authResult.PrimaryOrganization.OrganizationId,
+                name = authResult.PrimaryOrganization.OrganizationName,
+                path = authResult.PrimaryOrganization.OrganizationPath
+            },
+            permissions = authResult.Permissions.PermissionCodes,
+            roles = authResult.Permissions.Roles.Select(r => new { id = r.RoleId, name = r.RoleName }),
+            is_new_user = authResult.IsNewUser,
+            is_success = true
+        });
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Token exchange endpoint failed: {Message}", ex.Message);
+        logger.LogError(ex, "Enhanced token exchange endpoint failed: {Message}", ex.Message);
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
+
+// Token validation endpoint
+app.MapPost("/api/auth/validate", (HttpRequest request, IEnhancedAuthenticationService authService, ILogger<Program> logger) =>
+{
+    try
+    {
+        var authHeader = request.Headers.Authorization.FirstOrDefault();
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+        {
+            return Results.Unauthorized();
+        }
+
+        var token = authHeader["Bearer ".Length..];
+        var validationResult = authService.ValidateScopedToken(token);
+
+        if (!validationResult.Success)
+        {
+            logger.LogWarning("Token validation failed: {Errors}", string.Join(", ", validationResult.Errors.Select(e => e.Text)));
+            return Results.Unauthorized();
+        }
+
+        var payload = validationResult.Value;
+        logger.LogInformation("Token validated successfully for user {UserId}", payload.User.Id);
+
+        return Results.Ok(new
+        {
+            valid = true,
+            user = payload.User,
+            organization = payload.Organization,
+            permissions = payload.Permissions,
+            roles = payload.Roles,
+            expires_at = DateTimeOffset.FromUnixTimeSeconds(payload.Exp).DateTime,
+            includes_inherited = payload.IncludesInherited
+        });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Token validation endpoint failed: {Message}", ex.Message);
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
+
+// Token revocation endpoint
+app.MapPost("/api/auth/revoke", async (HttpRequest request, IEnhancedAuthenticationService authService, ILogger<Program> logger) =>
+{
+    try
+    {
+        var authHeader = request.Headers.Authorization.FirstOrDefault();
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+        {
+            return Results.Unauthorized();
+        }
+
+        var token = authHeader["Bearer ".Length..];
+        var ipAddress = request.HttpContext.Connection.RemoteIpAddress?.ToString();
+        
+        var result = await authService.RevokeScopedTokenAsync(token, "user_logout", ipAddress: ipAddress);
+
+        if (!result.Success)
+        {
+            logger.LogWarning("Token revocation failed: {Errors}", string.Join(", ", result.Errors.Select(e => e.Text)));
+            return Results.BadRequest(new { error = "Failed to revoke token" });
+        }
+
+        logger.LogInformation("Token revoked successfully");
+        return Results.Ok(new { revoked = true });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Token revocation endpoint failed: {Message}", ex.Message);
         return Results.BadRequest(new { error = ex.Message });
     }
 });

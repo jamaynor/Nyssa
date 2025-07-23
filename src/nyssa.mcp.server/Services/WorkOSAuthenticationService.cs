@@ -21,7 +21,7 @@ namespace Nyssa.Mcp.Server.Services
             _logger = logger;
         }
 
-        public async Task<AuthenticationResult> ExchangeCodeForTokenAsync(string code)
+        public virtual async Task<AuthenticationResult> ExchangeCodeForTokenAsync(string code)
         {
             try
             {

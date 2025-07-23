@@ -1,0 +1,6 @@
+{
+  "command": "mcp-server-postgresql",
+  "env": {
+    "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/nyssa-dev"
+  }
+}

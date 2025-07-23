@@ -1,0 +1,438 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3abd5761-e5a6-4ed6-95b4-4c6bf66d40ad" name="jmayn@SIERRASIX 2025-07-23 10:08:36" runUser="SIERRASIX\jmayn" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-07-23T10:08:36.4852459-04:00" queuing="2025-07-23T10:08:36.4852464-04:00" start="2025-07-23T10:08:35.9456987-04:00" finish="2025-07-23T10:08:36.6802248-04:00" />
+  <TestSettings name="default" id="fccddb83-dcbc-4817-ab7b-3aa9a446a86b">
+    <Deployment runDeploymentRoot="jmayn_SIERRASIX_2025-07-23_10_08_36" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="7bb89147-3485-43c3-acf4-8bfde49e0f8f" testId="abed24e6-6eae-0636-516b-d0cc049200d6" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.BlacklistTokenResponse_StaticMethods_ShouldCreateCorrectResponses" computerName="SIERRASIX" duration="00:00:00.0011425" startTime="2025-07-23T10:08:36.4617100-04:00" endTime="2025-07-23T10:08:36.4617100-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7bb89147-3485-43c3-acf4-8bfde49e0f8f" />
+    <UnitTestResult executionId="797afe47-bc74-446c-ae59-d25f30d4d5df" testId="128b528d-5183-0e7b-454c-b4ddf3956952" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.CreateAuthorizedToolDelegate_Should_Create_Working_Delegate" computerName="SIERRASIX" duration="00:00:00.0255897" startTime="2025-07-23T10:08:36.5046764-04:00" endTime="2025-07-23T10:08:36.5046765-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="797afe47-bc74-446c-ae59-d25f30d4d5df" />
+    <UnitTestResult executionId="96c49077-5bf7-4799-a308-f112a739222e" testId="0d5c87a0-442b-8819-289f-5562933b27dc" testName="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authentication_Flow_Should_Handle_New_User_Creation" computerName="SIERRASIX" duration="00:00:00.1325159" startTime="2025-07-23T10:08:36.5566148-04:00" endTime="2025-07-23T10:08:36.5566149-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="96c49077-5bf7-4799-a308-f112a739222e" />
+    <UnitTestResult executionId="a14671d5-ec22-42f4-85ab-94b8884d5268" testId="3d47dd75-2014-a38f-ac56-786884b4da3a" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Create_Valid_Context_From_Token" computerName="SIERRASIX" duration="00:00:00.0008443" startTime="2025-07-23T10:08:36.5554145-04:00" endTime="2025-07-23T10:08:36.5554145-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a14671d5-ec22-42f4-85ab-94b8884d5268" />
+    <UnitTestResult executionId="f6b85a8f-8285-4feb-8e4c-b37e839e83e4" testId="47ff7bba-7ecc-1e8d-11bd-a50931481e98" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(token: &quot;Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.s&quot;···)" computerName="SIERRASIX" duration="00:00:00.0525153" startTime="2025-07-23T10:08:36.5643112-04:00" endTime="2025-07-23T10:08:36.5643113-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f6b85a8f-8285-4feb-8e4c-b37e839e83e4">
+      <Output>
+        <ErrorInfo>
+          <Message>Expected extractedToken to be "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signature", but found &lt;null&gt;.</Message>
+          <StackTrace>   at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+   at FluentAssertions.Primitives.StringValidator.ValidateAgainstNulls()&#xD;
+   at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+   at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+   at Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(String token) in C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\McpAuthorizationMiddlewareTests.cs:line 194&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2c3ff300-e251-4ca5-82b1-c158d26d182e" testId="f4ed5716-1d88-d37b-c4b6-5e70dd26e7f8" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitConfiguration_ShouldBindFromConfiguration" computerName="SIERRASIX" duration="00:00:00.0111238" startTime="2025-07-23T10:08:36.4418511-04:00" endTime="2025-07-23T10:08:36.4418512-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2c3ff300-e251-4ca5-82b1-c158d26d182e" />
+    <UnitTestResult executionId="6a1e7c6f-9434-4b23-8f45-28367c8e2c07" testId="f15db5d4-b0f8-715b-2315-715bdaef2443" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Authorization_Extensions_Should_Work_Correctly" computerName="SIERRASIX" duration="00:00:00.0013177" startTime="2025-07-23T10:08:36.5060607-04:00" endTime="2025-07-23T10:08:36.5060609-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6a1e7c6f-9434-4b23-8f45-28367c8e2c07" />
+    <UnitTestResult executionId="2d6310aa-f7e0-47a5-82ca-cb416208733d" testId="37379d7a-3111-563a-d18e-72c143e01927" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.Authorization_Attributes_Should_Be_Detected_Correctly" computerName="SIERRASIX" duration="00:00:00.0008632" startTime="2025-07-23T10:08:36.5589824-04:00" endTime="2025-07-23T10:08:36.5589826-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2d6310aa-f7e0-47a5-82ca-cb416208733d" />
+    <UnitTestResult executionId="92636242-0953-4098-88eb-ac2f92d292a6" testId="12f5ae97-6b0c-bb34-14e7-d8d218284d83" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Block_Unauthorized_Tool_Execution" computerName="SIERRASIX" duration="00:00:00.0054869" startTime="2025-07-23T10:08:36.5736734-04:00" endTime="2025-07-23T10:08:36.5736737-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92636242-0953-4098-88eb-ac2f92d292a6" />
+    <UnitTestResult executionId="f851bfab-6fcf-4020-9157-407f079184e7" testId="f282ae04-4c90-ba88-40f9-e086300792f3" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Handle_Anonymous_Access" computerName="SIERRASIX" duration="00:00:00.0565101" startTime="2025-07-23T10:08:36.4806121-04:00" endTime="2025-07-23T10:08:36.4806123-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f851bfab-6fcf-4020-9157-407f079184e7" />
+    <UnitTestResult executionId="dfa976ef-83e9-4317-af1f-7e693ed5f185" testId="51dee33e-d99e-9280-7ab6-21fb22f7f8db" testName="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authorization_Should_Block_Access_Without_Required_Permissions" computerName="SIERRASIX" duration="00:00:00.0121416" startTime="2025-07-23T10:08:36.5695518-04:00" endTime="2025-07-23T10:08:36.5695520-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dfa976ef-83e9-4317-af1f-7e693ed5f185">
+      <Output>
+        <ErrorInfo>
+          <Message>Expected response["success"].ToString() to be "False" with a length of 5, but "True" has a length of 4, differs near "Tru" (index 0).</Message>
+          <StackTrace>   at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Primitives.StringEqualityValidator.ValidateAgainstLengthDifferences()&#xD;
+   at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+   at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+   at Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authorization_Should_Block_Access_Without_Required_Permissions() in C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\EndToEndAuthorizationTests.cs:line 414&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fe4b4ef7-8686-44e3-8e3e-ab2bfc2f3bce" testId="5c3c9df4-5de5-487c-d8bd-8290a3bc911d" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.RbacErrors_ShouldHaveCorrectErrorCodes" computerName="SIERRASIX" duration="00:00:00.0106263" startTime="2025-07-23T10:08:36.4397013-04:00" endTime="2025-07-23T10:08:36.4397573-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fe4b4ef7-8686-44e3-8e3e-ab2bfc2f3bce" />
+    <UnitTestResult executionId="0270b6fd-ba31-465a-9425-31b11439000a" testId="fd96f146-a52e-ecfd-fc2f-fad38886ff3a" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Allow_Authorized_Tool_Execution" computerName="SIERRASIX" duration="00:00:00.0065297" startTime="2025-07-23T10:08:36.5681106-04:00" endTime="2025-07-23T10:08:36.5681112-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0270b6fd-ba31-465a-9425-31b11439000a" />
+    <UnitTestResult executionId="566a146f-4f6a-4ce0-8bc5-2e92a7ddef60" testId="4288dcd5-f749-ce25-8501-63ec85a1c715" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(token: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signatur&quot;···)" computerName="SIERRASIX" duration="00:00:00.0011337" startTime="2025-07-23T10:08:36.5651290-04:00" endTime="2025-07-23T10:08:36.5651291-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="566a146f-4f6a-4ce0-8bc5-2e92a7ddef60">
+      <Output>
+        <ErrorInfo>
+          <Message>Expected extractedToken to be "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signature", but found &lt;null&gt;.</Message>
+          <StackTrace>   at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+   at FluentAssertions.Primitives.StringValidator.ValidateAgainstNulls()&#xD;
+   at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+   at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+   at Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(String token) in C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\McpAuthorizationMiddlewareTests.cs:line 194&#xD;
+   at InvokeStub_McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(Object, Span`1)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="485127be-5af2-4519-a2a6-c62c673f1d62" testId="2f94410d-df5d-6e38-9371-6167946f675c" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Handle_Async_Tool_Methods" computerName="SIERRASIX" duration="00:00:00.0306113" startTime="2025-07-23T10:08:36.6077095-04:00" endTime="2025-07-23T10:08:36.6077096-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="485127be-5af2-4519-a2a6-c62c673f1d62" />
+    <UnitTestResult executionId="c0483dfe-1a65-4214-b6b2-42cf0b1f2375" testId="f782a209-f904-e41c-6448-7dd46079c1d3" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;has spaces in it&quot;)" computerName="SIERRASIX" duration="00:00:00.0540622" startTime="2025-07-23T10:08:36.4781319-04:00" endTime="2025-07-23T10:08:36.4781323-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0483dfe-1a65-4214-b6b2-42cf0b1f2375" />
+    <UnitTestResult executionId="b360c941-cdd4-4a32-bcda-6c2a272aa354" testId="13c58c2a-501e-6866-f05f-a6b631afa48b" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Allow_Anonymous_Methods" computerName="SIERRASIX" duration="00:00:00.0005402" startTime="2025-07-23T10:08:36.5573730-04:00" endTime="2025-07-23T10:08:36.5573731-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b360c941-cdd4-4a32-bcda-6c2a272aa354" />
+    <UnitTestResult executionId="3efa21f4-07ad-4b2a-9051-eef344db7999" testId="3cc52dbc-35fd-f1b7-fbfe-0bcccb058d75" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.ResolveUserRequest_ShouldHaveCorrectProperties" computerName="SIERRASIX" duration="00:00:00.0004083" startTime="2025-07-23T10:08:36.4606455-04:00" endTime="2025-07-23T10:08:36.4606456-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3efa21f4-07ad-4b2a-9051-eef344db7999" />
+    <UnitTestResult executionId="637e9f1b-9d6c-4809-ab3e-5b4f006222bf" testId="3204005c-9620-7ed6-14b1-f561eac462ed" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.Complete_Authorization_Flow_Should_Work_End_To_End" computerName="SIERRASIX" duration="00:00:00.0031008" startTime="2025-07-23T10:08:36.5545437-04:00" endTime="2025-07-23T10:08:36.5545438-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="637e9f1b-9d6c-4809-ab3e-5b4f006222bf" />
+    <UnitTestResult executionId="cdfc74fc-38ad-4b21-8c0d-df3168a23e18" testId="e96f0791-9426-b833-d76a-350e329338ad" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.JwtService_Should_Reject_Invalid_Tokens" computerName="SIERRASIX" duration="00:00:00.0028258" startTime="2025-07-23T10:08:36.5652226-04:00" endTime="2025-07-23T10:08:36.5652227-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cdfc74fc-38ad-4b21-8c0d-df3168a23e18" />
+    <UnitTestResult executionId="76f3c881-c9e3-4a99-a259-e5409c74d11f" testId="d24fabc2-29d6-07cb-7aae-cdc866676d50" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.BlacklistTokenRequest_StaticMethods_ShouldCreateCorrectRequests" computerName="SIERRASIX" duration="00:00:00.0025319" startTime="2025-07-23T10:08:36.4427123-04:00" endTime="2025-07-23T10:08:36.4427123-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="76f3c881-c9e3-4a99-a259-e5409c74d11f" />
+    <UnitTestResult executionId="3aa23283-4578-46ee-a643-22fd8a4d9d21" testId="491adb53-cb3e-2665-7306-c47600e9845f" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;short&quot;)" computerName="SIERRASIX" duration="00:00:00.0000306" startTime="2025-07-23T10:08:36.4789798-04:00" endTime="2025-07-23T10:08:36.4789798-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3aa23283-4578-46ee-a643-22fd8a4d9d21" />
+    <UnitTestResult executionId="ccbb5fb2-6b57-43d5-a041-60c5c1370710" testId="4f15afd8-4da6-efee-fa30-b445693c0f97" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.Result_Pattern_ShouldWorkCorrectly" computerName="SIERRASIX" duration="00:00:00.0026128" startTime="2025-07-23T10:08:36.4616844-04:00" endTime="2025-07-23T10:08:36.4616844-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ccbb5fb2-6b57-43d5-a041-60c5c1370710" />
+    <UnitTestResult executionId="05d0e3df-29f2-492b-9711-91e0c3280c2d" testId="a569160a-d8b9-47a1-7173-5d78085184a2" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Allow_Anonymous_Tools" computerName="SIERRASIX" duration="00:00:00.0014568" startTime="2025-07-23T10:08:36.5751995-04:00" endTime="2025-07-23T10:08:36.5751995-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="05d0e3df-29f2-492b-9711-91e0c3280c2d" />
+    <UnitTestResult executionId="18450d02-c632-442c-80dc-ad86c270896f" testId="57db1c32-e2ea-ac9c-870a-1dbedeea6248" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Reject_Unauthenticated_Protected_Methods" computerName="SIERRASIX" duration="00:00:00.0006660" startTime="2025-07-23T10:08:36.5580729-04:00" endTime="2025-07-23T10:08:36.5580730-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="18450d02-c632-442c-80dc-ad86c270896f" />
+    <UnitTestResult executionId="bde28dfc-7af5-4dcc-af35-4102a56cf75a" testId="b8ad758f-de8c-3139-0269-e7e6afaf922f" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Reject_Method_With_Missing_Permissions" computerName="SIERRASIX" duration="00:00:00.0013085" startTime="2025-07-23T10:08:36.5571904-04:00" endTime="2025-07-23T10:08:36.5571905-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bde28dfc-7af5-4dcc-af35-4102a56cf75a" />
+    <UnitTestResult executionId="4fb2ad93-8d39-43ae-b7f9-661056fcc89f" testId="85dd9ee7-75f6-5c5c-6dfa-72942fe58684" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.GetUserPermissionsRequest_ShouldHaveCorrectDefaults" computerName="SIERRASIX" duration="00:00:00.0003499" startTime="2025-07-23T10:08:36.4607031-04:00" endTime="2025-07-23T10:08:36.4607031-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4fb2ad93-8d39-43ae-b7f9-661056fcc89f" />
+    <UnitTestResult executionId="63945c01-55f8-48aa-aa3e-a84a27c5f8af" testId="8123dac4-ed18-b789-3bed-1f4ae2ebdb7a" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.LogAuthenticationEventRequest_StaticMethods_ShouldCreateCorrectRequests" computerName="SIERRASIX" duration="00:00:00.0008868" startTime="2025-07-23T10:08:36.4606726-04:00" endTime="2025-07-23T10:08:36.4606727-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="63945c01-55f8-48aa-aa3e-a84a27c5f8af" />
+    <UnitTestResult executionId="b9ffc1ec-7469-4cf9-bf18-d402d4fc1bbd" testId="6cc05c1a-4eb7-f87c-d8aa-0363207900be" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.GetUserPermissionsResponse_ShouldCalculatePermissionCodes" computerName="SIERRASIX" duration="00:00:00.0034480" startTime="2025-07-23T10:08:36.4616496-04:00" endTime="2025-07-23T10:08:36.4616496-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b9ffc1ec-7469-4cf9-bf18-d402d4fc1bbd" />
+    <UnitTestResult executionId="a389e36c-d3bb-4f56-94d2-7baf9b24aac0" testId="ded3ce30-4c06-0ca4-334d-f976955943f9" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.DatabaseConfiguration_ShouldBindFromConfiguration" computerName="SIERRASIX" duration="00:00:00.0021462" startTime="2025-07-23T10:08:36.4426486-04:00" endTime="2025-07-23T10:08:36.4426487-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a389e36c-d3bb-4f56-94d2-7baf9b24aac0" />
+    <UnitTestResult executionId="35940223-1ffe-42bc-a127-fdf5a7403d9d" testId="3ac0e46d-defc-5d2b-030b-4eb1bd5dde54" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Handle_Tool_Execution_Errors" computerName="SIERRASIX" duration="00:00:00.0032543" startTime="2025-07-23T10:08:36.6118830-04:00" endTime="2025-07-23T10:08:36.6118831-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="35940223-1ffe-42bc-a127-fdf5a7403d9d" />
+    <UnitTestResult executionId="dbab0700-fec2-48ce-89ad-a4c6eaa4119d" testId="02e2e1c9-495b-61dd-f4cf-37d8bdf57c4c" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitOptions_ShouldSupportBothTransports(transport: &quot;RabbitMQ&quot;)" computerName="SIERRASIX" duration="00:00:00.0001830" startTime="2025-07-23T10:08:36.4605214-04:00" endTime="2025-07-23T10:08:36.4605214-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dbab0700-fec2-48ce-89ad-a4c6eaa4119d" />
+    <UnitTestResult executionId="36eacec7-1b2b-4616-9408-cf8611b5b210" testId="d7aaafe3-50c2-0b6c-00b0-0a09370045dd" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.CheckTokenBlacklistResponse_StaticMethods_ShouldWorkCorrectly" computerName="SIERRASIX" duration="00:00:00.0014479" startTime="2025-07-23T10:08:36.4606077-04:00" endTime="2025-07-23T10:08:36.4606078-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="36eacec7-1b2b-4616-9408-cf8611b5b210" />
+    <UnitTestResult executionId="e3d9b29e-0f76-4768-8a18-ea4c698cfab3" testId="87105e90-c965-26ee-cf68-fe3bd9135548" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.JwtService_Should_Generate_And_Validate_Scoped_Token" computerName="SIERRASIX" duration="00:00:00.0019017" startTime="2025-07-23T10:08:36.5513842-04:00" endTime="2025-07-23T10:08:36.5513843-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e3d9b29e-0f76-4768-8a18-ea4c698cfab3" />
+    <UnitTestResult executionId="bc5b16ce-2226-4046-9d6a-fa46a0f505ba" testId="1960fb6d-ec0a-9d29-3079-eafd5fc0411f" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;&quot;)" computerName="SIERRASIX" duration="00:00:00.0007440" startTime="2025-07-23T10:08:36.4789267-04:00" endTime="2025-07-23T10:08:36.4789269-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bc5b16ce-2226-4046-9d6a-fa46a0f505ba" />
+    <UnitTestResult executionId="872c16fb-9ee2-4b02-9111-b00965125d2e" testId="adebd029-5162-876d-6875-abfbc44ff8fb" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.ConfigurationSectionNames_ShouldBeCorrect" computerName="SIERRASIX" duration="00:00:00.0001113" startTime="2025-07-23T10:08:36.4426778-04:00" endTime="2025-07-23T10:08:36.4426779-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="872c16fb-9ee2-4b02-9111-b00965125d2e" />
+    <UnitTestResult executionId="1fa75706-63b6-416e-9726-743fbb977ef6" testId="ee2eb6f7-42e6-25f5-cccd-afb6e03b9e8e" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.CreateUserRequest_ShouldHaveCorrectProperties" computerName="SIERRASIX" duration="00:00:00.0011813" startTime="2025-07-23T10:08:36.4605593-04:00" endTime="2025-07-23T10:08:36.4605593-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1fa75706-63b6-416e-9726-743fbb977ef6" />
+    <UnitTestResult executionId="62bf0ac8-f9bf-4a40-b4e7-765eb31ab814" testId="d221cf9f-ece7-1014-f788-79835746a20e" testName="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.CheckTokenBlacklistRequest_ShouldHaveCorrectProperties" computerName="SIERRASIX" duration="00:00:00.0004436" startTime="2025-07-23T10:08:36.4617330-04:00" endTime="2025-07-23T10:08:36.4617330-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="62bf0ac8-f9bf-4a40-b4e7-765eb31ab814" />
+    <UnitTestResult executionId="9b34604c-f101-4e65-9e79-4b52540779d4" testId="e2212bda-e7d4-f336-94fc-bb200d834ca3" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.DatabaseOptions_ShouldHaveCorrectDefaults" computerName="SIERRASIX" duration="00:00:00.0005500" startTime="2025-07-23T10:08:36.4605444-04:00" endTime="2025-07-23T10:08:36.4605444-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9b34604c-f101-4e65-9e79-4b52540779d4" />
+    <UnitTestResult executionId="55b0972b-6566-4e19-bd78-0118ff5ca93d" testId="8197bc16-852e-04a9-9b65-b6bb7e9b54b0" testName="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Authorize_Method_With_Correct_Permissions" computerName="SIERRASIX" duration="00:00:00.0687903" startTime="2025-07-23T10:08:36.5494605-04:00" endTime="2025-07-23T10:08:36.5494606-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="55b0972b-6566-4e19-bd78-0118ff5ca93d" />
+    <UnitTestResult executionId="2942d2b0-3c18-46e9-bf23-e2ca35be8043" testId="76857bb4-5186-61b5-e41f-5c411d57239b" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitOptions_ShouldSupportBothTransports(transport: &quot;InMemory&quot;)" computerName="SIERRASIX" duration="00:00:00.0001117" startTime="2025-07-23T10:08:36.4604952-04:00" endTime="2025-07-23T10:08:36.4604953-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2942d2b0-3c18-46e9-bf23-e2ca35be8043" />
+    <UnitTestResult executionId="2ea291af-f853-4297-baf9-d1c9ec836b63" testId="e5d27c25-15a2-f816-c0d1-e32b374eb7e5" testName="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Token_Refresh_Should_Work_With_Updated_Permissions" computerName="SIERRASIX" duration="00:00:00.0011739" startTime="2025-07-23T10:08:36.6267881-04:00" endTime="2025-07-23T10:08:36.6267883-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2ea291af-f853-4297-baf9-d1c9ec836b63" />
+    <UnitTestResult executionId="4daeecbf-f0ef-426c-a2c3-8f7f61b822a4" testId="19c5dcd6-343f-75d3-778f-4eed58b9625d" testName="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Complete_Authentication_Flow_Should_Work_End_To_End" computerName="SIERRASIX" duration="00:00:00.0555105" startTime="2025-07-23T10:08:36.6261952-04:00" endTime="2025-07-23T10:08:36.6261954-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4daeecbf-f0ef-426c-a2c3-8f7f61b822a4">
+      <Output>
+        <ErrorInfo>
+          <Message>Moq.MockException : &#xD;
+Expected invocation on the mock once, but was 2 times: x =&gt; x.ExchangeCodeForTokenAsync("workos_auth_code_123")&#xD;
+&#xD;
+Performed invocations:&#xD;
+&#xD;
+   Mock&lt;WorkOSAuthenticationService:3&gt; (x):&#xD;
+&#xD;
+      WorkOSAuthenticationService.ExchangeCodeForTokenAsync("workos_auth_code_123")&#xD;
+      WorkOSAuthenticationService.ExchangeCodeForTokenAsync("workos_auth_code_123")&#xD;
+</Message>
+          <StackTrace>   at Moq.Mock.Verify(Mock mock, LambdaExpression expression, Times times, String failMessage) in /_/src/Moq/Mock.cs:line 332&#xD;
+   at Moq.Mock`1.Verify[TResult](Expression`1 expression, Func`1 times) in /_/src/Moq/Mock`1.cs:line 840&#xD;
+   at Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Complete_Authentication_Flow_Should_Work_End_To_End() in C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\EndToEndAuthorizationTests.cs:line 280&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a502a8f2-9f46-444f-8267-f47357b933e3" testId="1b45590b-11f6-ff68-c068-5fab5cea4e12" testName="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;not-a-token&quot;)" computerName="SIERRASIX" duration="00:00:00.0000134" startTime="2025-07-23T10:08:36.4790128-04:00" endTime="2025-07-23T10:08:36.4790128-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a502a8f2-9f46-444f-8267-f47357b933e3" />
+    <UnitTestResult executionId="49e9f89b-dc4b-4ca3-9d6c-10fd369d9ae4" testId="b0a7f85e-3a9d-4efe-00e2-0987703cd44e" testName="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitOptions_ShouldHaveCorrectDefaults" computerName="SIERRASIX" duration="00:00:00.0003755" startTime="2025-07-23T10:08:36.4603448-04:00" endTime="2025-07-23T10:08:36.4603448-04:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="49e9f89b-dc4b-4ca3-9d6c-10fd369d9ae4" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.GetUserPermissionsRequest_ShouldHaveCorrectDefaults" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="85dd9ee7-75f6-5c5c-6dfa-72942fe58684">
+      <Execution id="4fb2ad93-8d39-43ae-b7f9-661056fcc89f" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="GetUserPermissionsRequest_ShouldHaveCorrectDefaults" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;short&quot;)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="491adb53-cb3e-2665-7306-c47600e9845f">
+      <Execution id="3aa23283-4578-46ee-a643-22fd8a4d9d21" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="ExtractAuthorizationToken_Should_Reject_Invalid_Tokens" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitOptions_ShouldHaveCorrectDefaults" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="b0a7f85e-3a9d-4efe-00e2-0987703cd44e">
+      <Execution id="49e9f89b-dc4b-4ca3-9d6c-10fd369d9ae4" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="MassTransitOptions_ShouldHaveCorrectDefaults" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Authorization_Extensions_Should_Work_Correctly" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="f15db5d4-b0f8-715b-2315-715bdaef2443">
+      <Execution id="6a1e7c6f-9434-4b23-8f45-28367c8e2c07" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="Authorization_Extensions_Should_Work_Correctly" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Reject_Unauthenticated_Protected_Methods" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="57db1c32-e2ea-ac9c-870a-1dbedeea6248">
+      <Execution id="18450d02-c632-442c-80dc-ad86c270896f" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="AuthorizationService_Should_Reject_Unauthenticated_Protected_Methods" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.GetUserPermissionsResponse_ShouldCalculatePermissionCodes" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="6cc05c1a-4eb7-f87c-d8aa-0363207900be">
+      <Execution id="b9ffc1ec-7469-4cf9-bf18-d402d4fc1bbd" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="GetUserPermissionsResponse_ShouldCalculatePermissionCodes" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.Result_Pattern_ShouldWorkCorrectly" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="4f15afd8-4da6-efee-fa30-b445693c0f97">
+      <Execution id="ccbb5fb2-6b57-43d5-a041-60c5c1370710" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="Result_Pattern_ShouldWorkCorrectly" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Token_Refresh_Should_Work_With_Updated_Permissions" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="e5d27c25-15a2-f816-c0d1-e32b374eb7e5">
+      <Execution id="2ea291af-f853-4297-baf9-d1c9ec836b63" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests" name="Token_Refresh_Should_Work_With_Updated_Permissions" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.Complete_Authorization_Flow_Should_Work_End_To_End" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="3204005c-9620-7ed6-14b1-f561eac462ed">
+      <Execution id="637e9f1b-9d6c-4809-ab3e-5b4f006222bf" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="Complete_Authorization_Flow_Should_Work_End_To_End" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitOptions_ShouldSupportBothTransports(transport: &quot;RabbitMQ&quot;)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="02e2e1c9-495b-61dd-f4cf-37d8bdf57c4c">
+      <Execution id="dbab0700-fec2-48ce-89ad-a4c6eaa4119d" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="MassTransitOptions_ShouldSupportBothTransports" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.CreateUserRequest_ShouldHaveCorrectProperties" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="ee2eb6f7-42e6-25f5-cccd-afb6e03b9e8e">
+      <Execution id="1fa75706-63b6-416e-9726-743fbb977ef6" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="CreateUserRequest_ShouldHaveCorrectProperties" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Block_Unauthorized_Tool_Execution" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="12f5ae97-6b0c-bb34-14e7-d8d218284d83">
+      <Execution id="92636242-0953-4098-88eb-ac2f92d292a6" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="Middleware_Should_Block_Unauthorized_Tool_Execution" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;has spaces in it&quot;)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="f782a209-f904-e41c-6448-7dd46079c1d3">
+      <Execution id="c0483dfe-1a65-4214-b6b2-42cf0b1f2375" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="ExtractAuthorizationToken_Should_Reject_Invalid_Tokens" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.ConfigurationSectionNames_ShouldBeCorrect" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="adebd029-5162-876d-6875-abfbc44ff8fb">
+      <Execution id="872c16fb-9ee2-4b02-9111-b00965125d2e" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="ConfigurationSectionNames_ShouldBeCorrect" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.DatabaseOptions_ShouldHaveCorrectDefaults" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="e2212bda-e7d4-f336-94fc-bb200d834ca3">
+      <Execution id="9b34604c-f101-4e65-9e79-4b52540779d4" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="DatabaseOptions_ShouldHaveCorrectDefaults" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Handle_Tool_Execution_Errors" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="3ac0e46d-defc-5d2b-030b-4eb1bd5dde54">
+      <Execution id="35940223-1ffe-42bc-a127-fdf5a7403d9d" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="Middleware_Should_Handle_Tool_Execution_Errors" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authentication_Flow_Should_Handle_New_User_Creation" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="0d5c87a0-442b-8819-289f-5562933b27dc">
+      <Execution id="96c49077-5bf7-4799-a308-f112a739222e" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests" name="Authentication_Flow_Should_Handle_New_User_Creation" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Reject_Method_With_Missing_Permissions" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="b8ad758f-de8c-3139-0269-e7e6afaf922f">
+      <Execution id="bde28dfc-7af5-4dcc-af35-4102a56cf75a" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="AuthorizationService_Should_Reject_Method_With_Missing_Permissions" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Create_Valid_Context_From_Token" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="3d47dd75-2014-a38f-ac56-786884b4da3a">
+      <Execution id="a14671d5-ec22-42f4-85ab-94b8884d5268" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="AuthorizationService_Should_Create_Valid_Context_From_Token" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.JwtService_Should_Reject_Invalid_Tokens" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="e96f0791-9426-b833-d76a-350e329338ad">
+      <Execution id="cdfc74fc-38ad-4b21-8c0d-df3168a23e18" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="JwtService_Should_Reject_Invalid_Tokens" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Handle_Anonymous_Access" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="f282ae04-4c90-ba88-40f9-e086300792f3">
+      <Execution id="f851bfab-6fcf-4020-9157-407f079184e7" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="AuthorizationService_Should_Handle_Anonymous_Access" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.RbacErrors_ShouldHaveCorrectErrorCodes" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="5c3c9df4-5de5-487c-d8bd-8290a3bc911d">
+      <Execution id="fe4b4ef7-8686-44e3-8e3e-ab2bfc2f3bce" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="RbacErrors_ShouldHaveCorrectErrorCodes" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authorization_Should_Block_Access_Without_Required_Permissions" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="51dee33e-d99e-9280-7ab6-21fb22f7f8db">
+      <Execution id="dfa976ef-83e9-4317-af1f-7e693ed5f185" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests" name="Authorization_Should_Block_Access_Without_Required_Permissions" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitOptions_ShouldSupportBothTransports(transport: &quot;InMemory&quot;)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="76857bb4-5186-61b5-e41f-5c411d57239b">
+      <Execution id="2942d2b0-3c18-46e9-bf23-e2ca35be8043" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="MassTransitOptions_ShouldSupportBothTransports" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.DatabaseConfiguration_ShouldBindFromConfiguration" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="ded3ce30-4c06-0ca4-334d-f976955943f9">
+      <Execution id="a389e36c-d3bb-4f56-94d2-7baf9b24aac0" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="DatabaseConfiguration_ShouldBindFromConfiguration" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(token: &quot;Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.s&quot;···)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="47ff7bba-7ecc-1e8d-11bd-a50931481e98">
+      <Execution id="f6b85a8f-8285-4feb-8e4c-b37e839e83e4" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="ExtractAuthorizationToken_Should_Detect_JWT_Tokens" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.LogAuthenticationEventRequest_StaticMethods_ShouldCreateCorrectRequests" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="8123dac4-ed18-b789-3bed-1f4ae2ebdb7a">
+      <Execution id="63945c01-55f8-48aa-aa3e-a84a27c5f8af" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="LogAuthenticationEventRequest_StaticMethods_ShouldCreateCorrectRequests" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Allow_Anonymous_Methods" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="13c58c2a-501e-6866-f05f-a6b631afa48b">
+      <Execution id="b360c941-cdd4-4a32-bcda-6c2a272aa354" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="AuthorizationService_Should_Allow_Anonymous_Methods" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Complete_Authentication_Flow_Should_Work_End_To_End" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="19c5dcd6-343f-75d3-778f-4eed58b9625d">
+      <Execution id="4daeecbf-f0ef-426c-a2c3-8f7f61b822a4" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests" name="Complete_Authentication_Flow_Should_Work_End_To_End" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.CheckTokenBlacklistRequest_ShouldHaveCorrectProperties" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="d221cf9f-ece7-1014-f788-79835746a20e">
+      <Execution id="62bf0ac8-f9bf-4a40-b4e7-765eb31ab814" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="CheckTokenBlacklistRequest_ShouldHaveCorrectProperties" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.Authorization_Attributes_Should_Be_Detected_Correctly" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="37379d7a-3111-563a-d18e-72c143e01927">
+      <Execution id="2d6310aa-f7e0-47a5-82ca-cb416208733d" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="Authorization_Attributes_Should_Be_Detected_Correctly" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.BlacklistTokenResponse_StaticMethods_ShouldCreateCorrectResponses" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="abed24e6-6eae-0636-516b-d0cc049200d6">
+      <Execution id="7bb89147-3485-43c3-acf4-8bfde49e0f8f" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="BlacklistTokenResponse_StaticMethods_ShouldCreateCorrectResponses" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.BlacklistTokenRequest_StaticMethods_ShouldCreateCorrectRequests" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="d24fabc2-29d6-07cb-7aae-cdc866676d50">
+      <Execution id="76f3c881-c9e3-4a99-a259-e5409c74d11f" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="BlacklistTokenRequest_StaticMethods_ShouldCreateCorrectRequests" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Handle_Async_Tool_Methods" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="2f94410d-df5d-6e38-9371-6167946f675c">
+      <Execution id="485127be-5af2-4519-a2a6-c62c673f1d62" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="Middleware_Should_Handle_Async_Tool_Methods" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.JwtService_Should_Generate_And_Validate_Scoped_Token" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="87105e90-c965-26ee-cf68-fe3bd9135548">
+      <Execution id="e3d9b29e-0f76-4768-8a18-ea4c698cfab3" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="JwtService_Should_Generate_And_Validate_Scoped_Token" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.CreateAuthorizedToolDelegate_Should_Create_Working_Delegate" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="128b528d-5183-0e7b-454c-b4ddf3956952">
+      <Execution id="797afe47-bc74-446c-ae59-d25f30d4d5df" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="CreateAuthorizedToolDelegate_Should_Create_Working_Delegate" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.ConfigurationTests.MassTransitConfiguration_ShouldBindFromConfiguration" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="f4ed5716-1d88-d37b-c4b6-5e70dd26e7f8">
+      <Execution id="2c3ff300-e251-4ca5-82b1-c158d26d182e" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.ConfigurationTests" name="MassTransitConfiguration_ShouldBindFromConfiguration" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;not-a-token&quot;)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="1b45590b-11f6-ff68-c068-5fab5cea4e12">
+      <Execution id="a502a8f2-9f46-444f-8267-f47357b933e3" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="ExtractAuthorizationToken_Should_Reject_Invalid_Tokens" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Allow_Authorized_Tool_Execution" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="fd96f146-a52e-ecfd-fc2f-fad38886ff3a">
+      <Execution id="0270b6fd-ba31-465a-9425-31b11439000a" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="Middleware_Should_Allow_Authorized_Tool_Execution" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(token: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signatur&quot;···)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="4288dcd5-f749-ce25-8501-63ec85a1c715">
+      <Execution id="566a146f-4f6a-4ce0-8bc5-2e92a7ddef60" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="ExtractAuthorizationToken_Should_Detect_JWT_Tokens" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.IntegrationTests.AuthorizationService_Should_Authorize_Method_With_Correct_Permissions" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="8197bc16-852e-04a9-9b65-b6bb7e9b54b0">
+      <Execution id="55b0972b-6566-4e19-bd78-0118ff5ca93d" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.IntegrationTests" name="AuthorizationService_Should_Authorize_Method_With_Correct_Permissions" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.CheckTokenBlacklistResponse_StaticMethods_ShouldWorkCorrectly" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="d7aaafe3-50c2-0b6c-00b0-0a09370045dd">
+      <Execution id="36eacec7-1b2b-4616-9408-cf8611b5b210" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="CheckTokenBlacklistResponse_StaticMethods_ShouldWorkCorrectly" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests.ResolveUserRequest_ShouldHaveCorrectProperties" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="3cc52dbc-35fd-f1b7-fbfe-0bcccb058d75">
+      <Execution id="3efa21f4-07ad-4b2a-9051-eef344db7999" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.BasicFunctionalityTests" name="ResolveUserRequest_ShouldHaveCorrectProperties" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.Middleware_Should_Allow_Anonymous_Tools" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="a569160a-d8b9-47a1-7173-5d78085184a2">
+      <Execution id="05d0e3df-29f2-492b-9711-91e0c3280c2d" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="Middleware_Should_Allow_Anonymous_Tools" />
+    </UnitTest>
+    <UnitTest name="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Reject_Invalid_Tokens(token: &quot;&quot;)" storage="c:\workspace\repos\jamaynor\nyssa\src\nyssa.mcp.server.tests\bin\debug\net9.0\nyssa.mcp.server.tests.dll" id="1960fb6d-ec0a-9d29-3079-eafd5fc0411f">
+      <Execution id="bc5b16ce-2226-4046-9d6a-fa46a0f505ba" />
+      <TestMethod codeBase="C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\bin\Debug\net9.0\nyssa.mcp.server.tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests" name="ExtractAuthorizationToken_Should_Reject_Invalid_Tokens" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="abed24e6-6eae-0636-516b-d0cc049200d6" executionId="7bb89147-3485-43c3-acf4-8bfde49e0f8f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="128b528d-5183-0e7b-454c-b4ddf3956952" executionId="797afe47-bc74-446c-ae59-d25f30d4d5df" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0d5c87a0-442b-8819-289f-5562933b27dc" executionId="96c49077-5bf7-4799-a308-f112a739222e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3d47dd75-2014-a38f-ac56-786884b4da3a" executionId="a14671d5-ec22-42f4-85ab-94b8884d5268" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="47ff7bba-7ecc-1e8d-11bd-a50931481e98" executionId="f6b85a8f-8285-4feb-8e4c-b37e839e83e4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f4ed5716-1d88-d37b-c4b6-5e70dd26e7f8" executionId="2c3ff300-e251-4ca5-82b1-c158d26d182e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f15db5d4-b0f8-715b-2315-715bdaef2443" executionId="6a1e7c6f-9434-4b23-8f45-28367c8e2c07" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="37379d7a-3111-563a-d18e-72c143e01927" executionId="2d6310aa-f7e0-47a5-82ca-cb416208733d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="12f5ae97-6b0c-bb34-14e7-d8d218284d83" executionId="92636242-0953-4098-88eb-ac2f92d292a6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f282ae04-4c90-ba88-40f9-e086300792f3" executionId="f851bfab-6fcf-4020-9157-407f079184e7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="51dee33e-d99e-9280-7ab6-21fb22f7f8db" executionId="dfa976ef-83e9-4317-af1f-7e693ed5f185" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5c3c9df4-5de5-487c-d8bd-8290a3bc911d" executionId="fe4b4ef7-8686-44e3-8e3e-ab2bfc2f3bce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fd96f146-a52e-ecfd-fc2f-fad38886ff3a" executionId="0270b6fd-ba31-465a-9425-31b11439000a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4288dcd5-f749-ce25-8501-63ec85a1c715" executionId="566a146f-4f6a-4ce0-8bc5-2e92a7ddef60" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2f94410d-df5d-6e38-9371-6167946f675c" executionId="485127be-5af2-4519-a2a6-c62c673f1d62" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f782a209-f904-e41c-6448-7dd46079c1d3" executionId="c0483dfe-1a65-4214-b6b2-42cf0b1f2375" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="13c58c2a-501e-6866-f05f-a6b631afa48b" executionId="b360c941-cdd4-4a32-bcda-6c2a272aa354" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3cc52dbc-35fd-f1b7-fbfe-0bcccb058d75" executionId="3efa21f4-07ad-4b2a-9051-eef344db7999" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3204005c-9620-7ed6-14b1-f561eac462ed" executionId="637e9f1b-9d6c-4809-ab3e-5b4f006222bf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e96f0791-9426-b833-d76a-350e329338ad" executionId="cdfc74fc-38ad-4b21-8c0d-df3168a23e18" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d24fabc2-29d6-07cb-7aae-cdc866676d50" executionId="76f3c881-c9e3-4a99-a259-e5409c74d11f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="491adb53-cb3e-2665-7306-c47600e9845f" executionId="3aa23283-4578-46ee-a643-22fd8a4d9d21" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4f15afd8-4da6-efee-fa30-b445693c0f97" executionId="ccbb5fb2-6b57-43d5-a041-60c5c1370710" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a569160a-d8b9-47a1-7173-5d78085184a2" executionId="05d0e3df-29f2-492b-9711-91e0c3280c2d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="57db1c32-e2ea-ac9c-870a-1dbedeea6248" executionId="18450d02-c632-442c-80dc-ad86c270896f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b8ad758f-de8c-3139-0269-e7e6afaf922f" executionId="bde28dfc-7af5-4dcc-af35-4102a56cf75a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="85dd9ee7-75f6-5c5c-6dfa-72942fe58684" executionId="4fb2ad93-8d39-43ae-b7f9-661056fcc89f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8123dac4-ed18-b789-3bed-1f4ae2ebdb7a" executionId="63945c01-55f8-48aa-aa3e-a84a27c5f8af" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6cc05c1a-4eb7-f87c-d8aa-0363207900be" executionId="b9ffc1ec-7469-4cf9-bf18-d402d4fc1bbd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ded3ce30-4c06-0ca4-334d-f976955943f9" executionId="a389e36c-d3bb-4f56-94d2-7baf9b24aac0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3ac0e46d-defc-5d2b-030b-4eb1bd5dde54" executionId="35940223-1ffe-42bc-a127-fdf5a7403d9d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="02e2e1c9-495b-61dd-f4cf-37d8bdf57c4c" executionId="dbab0700-fec2-48ce-89ad-a4c6eaa4119d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d7aaafe3-50c2-0b6c-00b0-0a09370045dd" executionId="36eacec7-1b2b-4616-9408-cf8611b5b210" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="87105e90-c965-26ee-cf68-fe3bd9135548" executionId="e3d9b29e-0f76-4768-8a18-ea4c698cfab3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1960fb6d-ec0a-9d29-3079-eafd5fc0411f" executionId="bc5b16ce-2226-4046-9d6a-fa46a0f505ba" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="adebd029-5162-876d-6875-abfbc44ff8fb" executionId="872c16fb-9ee2-4b02-9111-b00965125d2e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ee2eb6f7-42e6-25f5-cccd-afb6e03b9e8e" executionId="1fa75706-63b6-416e-9726-743fbb977ef6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d221cf9f-ece7-1014-f788-79835746a20e" executionId="62bf0ac8-f9bf-4a40-b4e7-765eb31ab814" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e2212bda-e7d4-f336-94fc-bb200d834ca3" executionId="9b34604c-f101-4e65-9e79-4b52540779d4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8197bc16-852e-04a9-9b65-b6bb7e9b54b0" executionId="55b0972b-6566-4e19-bd78-0118ff5ca93d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="76857bb4-5186-61b5-e41f-5c411d57239b" executionId="2942d2b0-3c18-46e9-bf23-e2ca35be8043" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e5d27c25-15a2-f816-c0d1-e32b374eb7e5" executionId="2ea291af-f853-4297-baf9-d1c9ec836b63" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="19c5dcd6-343f-75d3-778f-4eed58b9625d" executionId="4daeecbf-f0ef-426c-a2c3-8f7f61b822a4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1b45590b-11f6-ff68-c068-5fab5cea4e12" executionId="a502a8f2-9f46-444f-8267-f47357b933e3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b0a7f85e-3a9d-4efe-00e2-0987703cd44e" executionId="49e9f89b-dc4b-4ca3-9d6c-10fd369d9ae4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="45" executed="45" passed="41" failed="4" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.6)&#xD;
+[xUnit.net 00:00:00.06]   Discovering: nyssa.mcp.server.tests&#xD;
+[xUnit.net 00:00:00.10]   Discovered:  nyssa.mcp.server.tests&#xD;
+[xUnit.net 00:00:00.11]   Starting:    nyssa.mcp.server.tests&#xD;
+[xUnit.net 00:00:00.28]       Expected extractedToken to be "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signature", but found &lt;null&gt;.&#xD;
+[xUnit.net 00:00:00.28]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringValidator.ValidateAgainstNulls()&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+[xUnit.net 00:00:00.28]         C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\McpAuthorizationMiddlewareTests.cs(194,0): at Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(String token)&#xD;
+[xUnit.net 00:00:00.28]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.28]       Expected extractedToken to be "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signature", but found &lt;null&gt;.&#xD;
+[xUnit.net 00:00:00.28]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringValidator.ValidateAgainstNulls()&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+[xUnit.net 00:00:00.28]         C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\McpAuthorizationMiddlewareTests.cs(194,0): at Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(String token)&#xD;
+[xUnit.net 00:00:00.28]            at InvokeStub_McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(Object, Span`1)&#xD;
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)&#xD;
+[xUnit.net 00:00:00.28]       Expected response["success"].ToString() to be "False" with a length of 5, but "True" has a length of 4, differs near "Tru" (index 0).&#xD;
+[xUnit.net 00:00:00.28]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringEqualityValidator.ValidateAgainstLengthDifferences()&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringValidator.Validate()&#xD;
+[xUnit.net 00:00:00.28]            at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)&#xD;
+[xUnit.net 00:00:00.28]         C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\EndToEndAuthorizationTests.cs(414,0): at Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authorization_Should_Block_Access_Without_Required_Permissions()&#xD;
+[xUnit.net 00:00:00.28]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:00.34]       Moq.MockException : &#xD;
+[xUnit.net 00:00:00.34]       Expected invocation on the mock once, but was 2 times: x =&gt; x.ExchangeCodeForTokenAsync("workos_auth_code_123")&#xD;
+[xUnit.net 00:00:00.34]       &#xD;
+[xUnit.net 00:00:00.34]       Performed invocations:&#xD;
+[xUnit.net 00:00:00.34]       &#xD;
+[xUnit.net 00:00:00.34]          Mock&lt;WorkOSAuthenticationService:3&gt; (x):&#xD;
+[xUnit.net 00:00:00.34]       &#xD;
+[xUnit.net 00:00:00.34]             WorkOSAuthenticationService.ExchangeCodeForTokenAsync("workos_auth_code_123")&#xD;
+[xUnit.net 00:00:00.34]             WorkOSAuthenticationService.ExchangeCodeForTokenAsync("workos_auth_code_123")&#xD;
+[xUnit.net 00:00:00.34]       &#xD;
+[xUnit.net 00:00:00.34]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.34]         /_/src/Moq/Mock.cs(332,0): at Moq.Mock.Verify(Mock mock, LambdaExpression expression, Times times, String failMessage)&#xD;
+[xUnit.net 00:00:00.34]         /_/src/Moq/Mock`1.cs(840,0): at Moq.Mock`1.Verify[TResult](Expression`1 expression, Func`1 times)&#xD;
+[xUnit.net 00:00:00.34]         C:\Workspace\repos\jamaynor\Nyssa\src\nyssa.mcp.server.tests\EndToEndAuthorizationTests.cs(280,0): at Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Complete_Authentication_Flow_Should_Work_End_To_End()&#xD;
+[xUnit.net 00:00:00.34]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:00.34]   Finished:    nyssa.mcp.server.tests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="SIERRASIX" outcome="Error" timestamp="2025-07-23T10:08:36.5627058-04:00">
+        <Text>[xUnit.net 00:00:00.28]     Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.s"···) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="SIERRASIX" outcome="Error" timestamp="2025-07-23T10:08:36.5646418-04:00">
+        <Text>[xUnit.net 00:00:00.28]     Nyssa.Mcp.Server.Tests.McpAuthorizationMiddlewareTests.ExtractAuthorizationToken_Should_Detect_JWT_Tokens(token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signatur"···) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="SIERRASIX" outcome="Error" timestamp="2025-07-23T10:08:36.5695439-04:00">
+        <Text>[xUnit.net 00:00:00.28]     Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Authorization_Should_Block_Access_Without_Required_Permissions [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="SIERRASIX" outcome="Error" timestamp="2025-07-23T10:08:36.6259444-04:00">
+        <Text>[xUnit.net 00:00:00.34]     Nyssa.Mcp.Server.Tests.EndToEndAuthorizationTests.Complete_Authentication_Flow_Should_Work_End_To_End [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

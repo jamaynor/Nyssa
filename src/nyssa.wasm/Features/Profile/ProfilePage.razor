@@ -1,139 +1,244 @@
 @page "/profile"
+@attribute [Authorize]
 @using Nyssa.Wasm.Features.Authentication
 @inject AuthenticationStateService AuthStateService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
-<div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+<PageTitle>Profile - Nyssa</PageTitle>
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         @if (authState.IsAuthenticated && authState.User != null)
         {
-            <div class="bg-white shadow rounded-lg">
-                <!-- Profile Header -->
-                <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
-                    <div class="flex items-center space-x-4">
+            <!-- Profile Header -->
+            <div class="bg-white shadow rounded-lg mb-6">
+                <div class="px-6 py-8">
+                    <div class="flex items-center space-x-6">
                         <div class="flex-shrink-0">
                             @if (!string.IsNullOrEmpty(authState.User.ProfilePictureUrl))
                             {
-                                <img class="h-20 w-20 rounded-full border-4 border-white shadow-lg" 
-                                     src="@authState.User.ProfilePictureUrl" 
-                                     alt="Profile picture" />
+                                <img class="h-20 w-20 rounded-full" src="@authState.User.ProfilePictureUrl" alt="@authState.User.FullName" />
                             }
                             else
                             {
-                                <div class="h-20 w-20 rounded-full bg-white bg-opacity-20 border-4 border-white shadow-lg flex items-center justify-center text-2xl font-bold">
-                                    @authState.User.Initials
+                                <div class="h-20 w-20 rounded-full bg-indigo-500 flex items-center justify-center">
+                                    <span class="text-xl font-medium text-white">@authState.User.Initials</span>
                                 </div>
                             }
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <h1 class="text-2xl font-bold">@authState.User.FullName</h1>
-                            <p class="text-blue-100">@authState.User.Email</p>
+                        <div class="flex-1">
+                            <h1 class="text-2xl font-bold text-gray-900">@authState.User.FullName</h1>
+                            <p class="text-sm text-gray-500">@authState.User.Email</p>
+                            <p class="text-xs text-gray-400 mt-1">Member since @authState.User.CreatedAt.ToString("MMMM yyyy")</p>
+                        </div>
+                        <div>
+                            @if (isEditing)
+                            {
+                                <div class="flex space-x-2">
+                                    <button @onclick="SaveProfile" disabled="@isSaving" class="btn btn-primary">
+                                        @if (isSaving)
+                                        {
+                                            <span>Saving...</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Save</span>
+                                        }
+                                    </button>
+                                    <button @onclick="CancelEdit" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <button @onclick="StartEdit" class="btn btn-primary">Edit Profile</button>
+                            }
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Profile Content -->
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        <!-- Personal Information -->
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
-                                        <input type="text" id="firstName" @bind="editedProfile.FirstName" 
-                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                               disabled="@(!isEditing)" />
-                                    </div>
-                                    <div>
-                                        <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
-                                        <input type="text" id="lastName" @bind="editedProfile.LastName" 
-                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                               disabled="@(!isEditing)" />
-                                    </div>
-                                    <div>
-                                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                        <input type="email" id="email" @bind="editedProfile.Email" 
-                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm"
-                                               disabled />
-                                        <p class="mt-1 text-xs text-gray-500">Email cannot be changed</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Account Details -->
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Account Details</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">User ID</label>
-                                        <div class="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md font-mono">
-                                            @authState.User.Id
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Account Created</label>
-                                        <div class="mt-1 text-sm text-gray-900">
-                                            @authState.User.CreatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Last Updated</label>
-                                        <div class="mt-1 text-sm text-gray-900">
-                                            @authState.User.UpdatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="mt-8 flex justify-between">
+            <!-- Profile Information -->
+            <div class="bg-white shadow rounded-lg mb-6">
+                <div class="px-6 py-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Profile Information</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            @if (!isEditing)
+                            <label class="block text-sm font-medium text-gray-700">First Name</label>
+                            @if (isEditing)
                             {
-                                <button @onclick="StartEditing" 
-                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-4.5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                    </svg>
-                                    Edit Profile
-                                </button>
+                                <input @bind="editedProfile.FirstName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                             }
                             else
                             {
-                                <div class="space-x-3">
-                                    <button @onclick="SaveChanges" disabled="@isSaving"
-                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
-                                        @if (isSaving)
-                                        {
-                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                        }
-                                        @(isSaving ? "Saving..." : "Save Changes")
+                                <p class="mt-1 text-sm text-gray-900">@authState.User.FirstName</p>
+                            }
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                            @if (isEditing)
+                            {
+                                <input @bind="editedProfile.LastName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                            }
+                            else
+                            {
+                                <p class="mt-1 text-sm text-gray-900">@authState.User.LastName</p>
+                            }
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                            <p class="mt-1 text-sm text-gray-900">@authState.User.Email</p>
+                            <p class="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">User ID</label>
+                            <p class="mt-1 text-sm text-gray-900 font-mono">@authState.User.Id</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organization Selection -->
+            <div class="bg-white shadow rounded-lg mb-6">
+                <div class="px-6 py-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Organization</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Current Organization</label>
+                            <div class="mt-1 flex items-center justify-between p-3 border border-gray-300 rounded-md bg-gray-50">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">@currentOrganization.Name</p>
+                                    <p class="text-xs text-gray-500">@currentOrganization.Id</p>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Switch Organization</label>
+                            <select @onchange="OnOrganizationChange" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                <option value="">Select an organization...</option>
+                                @foreach (var org in availableOrganizations)
+                                {
+                                    <option value="@org.Id">@org.Name</option>
+                                }
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">
+                                Switching organizations will exchange your current token for access to the selected organization.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Access Token Details -->
+            <div class="bg-white shadow rounded-lg mb-6">
+                <div class="px-6 py-4">
+                    <button @onclick="() => showAccessToken = !showAccessToken" class="flex items-center justify-between w-full text-left">
+                        <h2 class="text-lg font-medium text-gray-900">Access Token Details</h2>
+                        <svg class="h-5 w-5 text-gray-400 transform transition-transform @(showAccessToken ? "rotate-180" : "")" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    @if (showAccessToken)
+                    {
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Token (truncated)</label>
+                                <div class="mt-1 flex">
+                                    <code class="flex-1 text-xs bg-gray-100 p-2 rounded-l-md border border-r-0 border-gray-300 font-mono break-all">
+                                        @(authState.AccessToken?.Length > 100 ? authState.AccessToken[..50] + "..." + authState.AccessToken[^50..] : authState.AccessToken ?? "No token")
+                                    </code>
+                                    <button @onclick="() => CopyToClipboard(authState.AccessToken ?? string.Empty)" class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md text-sm text-gray-700 hover:bg-gray-100">
+                                        Copy
                                     </button>
-                                    <button @onclick="CancelEditing"
-                                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Cancel
-                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Expires At</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    @(authState.TokenExpiresAt?.ToString("yyyy-MM-dd HH:mm:ss UTC") ?? "Unknown")
+                                    @if (authState.TokenExpiresAt.HasValue)
+                                    {
+                                        var timeLeft = authState.TokenExpiresAt.Value - DateTime.UtcNow;
+                                        <span class="ml-2 text-xs @(timeLeft.TotalHours < 1 ? "text-red-600" : "text-gray-500")">
+                                            (@(timeLeft.TotalHours > 0 ? $"{timeLeft.TotalHours:F0}h {timeLeft.Minutes}m left" : "Expired"))
+                                        </span>
+                                    }
+                                </p>
+                            </div>
+                            @if (accessTokenClaims != null)
+                            {
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Token Claims</label>
+                                    <div class="bg-gray-50 rounded-md p-3 max-h-60 overflow-y-auto">
+                                        <pre class="text-xs text-gray-800 whitespace-pre-wrap">@accessTokenClaims</pre>
+                                    </div>
                                 </div>
                             }
                         </div>
-                        
-                        <button @onclick="GoBack"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    }
+                </div>
+            </div>
+
+            <!-- ID Token Details -->
+            @if (!string.IsNullOrEmpty(idToken))
+            {
+                <div class="bg-white shadow rounded-lg mb-6">
+                    <div class="px-6 py-4">
+                        <button @onclick="() => showIdToken = !showIdToken" class="flex items-center justify-between w-full text-left">
+                            <h2 class="text-lg font-medium text-gray-900">ID Token Details</h2>
+                            <svg class="h-5 w-5 text-gray-400 transform transition-transform @(showIdToken ? "rotate-180" : "")" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                            Back
                         </button>
+                        @if (showIdToken)
+                        {
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Token (truncated)</label>
+                                    <div class="mt-1 flex">
+                                        <code class="flex-1 text-xs bg-gray-100 p-2 rounded-l-md border border-r-0 border-gray-300 font-mono break-all">
+                                            @(idToken.Length > 100 ? idToken[..50] + "..." + idToken[^50..] : idToken)
+                                        </code>
+                                        <button @onclick="() => CopyToClipboard(idToken)" class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md text-sm text-gray-700 hover:bg-gray-100">
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                                @if (idTokenClaims != null)
+                                {
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Token Claims</label>
+                                        <div class="bg-gray-50 rounded-md p-3 max-h-60 overflow-y-auto">
+                                            <pre class="text-xs text-gray-800 whitespace-pre-wrap">@idTokenClaims</pre>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Session Information -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Session Information</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Last Updated</label>
+                            <p class="mt-1 text-sm text-gray-900">@authState.User.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss UTC")</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Session Status</label>
+                            <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Active
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -141,14 +246,8 @@
         else
         {
             <div class="text-center py-12">
-                <div class="max-w-md mx-auto">
-                    <h1 class="text-2xl font-bold text-gray-900">Access Denied</h1>
-                    <p class="mt-2 text-gray-600">You must be logged in to view your profile.</p>
-                    <button @onclick="GoHome" 
-                            class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
-                        Go Home
-                    </button>
-                </div>
+                <p class="text-gray-500">You must be logged in to view your profile.</p>
+                <button @onclick="GoToLogin" class="mt-4 btn btn-primary">Go to Login</button>
             </div>
         }
     </div>
@@ -159,6 +258,20 @@
     private UserProfile editedProfile = new();
     private bool isEditing = false;
     private bool isSaving = false;
+    private bool showAccessToken = false;
+    private bool showIdToken = false;
+    private string? idToken;
+    private string? accessTokenClaims;
+    private string? idTokenClaims;
+
+    // Mock organization data - replace with real data from service
+    private Organization currentOrganization = new() { Id = "org_current", Name = "Current Organization" };
+    private List<Organization> availableOrganizations = new()
+    {
+        new() { Id = "org_1", Name = "Acme Corporation" },
+        new() { Id = "org_2", Name = "TechStart Inc." },
+        new() { Id = "org_3", Name = "Innovation Labs" }
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -167,7 +280,6 @@
         
         if (authState.User != null)
         {
-            // Create a copy for editing
             editedProfile = new UserProfile
             {
                 Id = authState.User.Id,
@@ -180,43 +292,118 @@
             };
         }
 
+        // Parse tokens to extract claims
+        ParseTokenClaims();
+
         AuthStateService.AuthStateChanged += OnAuthStateChanged;
     }
 
-    private void OnAuthStateChanged()
+    private void ParseTokenClaims()
     {
-        authState = AuthStateService.GetAuthState();
-        InvokeAsync(StateHasChanged);
+        try
+        {
+            if (!string.IsNullOrEmpty(authState.AccessToken))
+            {
+                accessTokenClaims = ParseJwtToken(authState.AccessToken);
+            }
+            
+            // ID token would come from the authentication result - for now using placeholder
+            idToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoidXNlcl8wMUswUUJEN1Q1VFREWFBDQk41OUtERVFQNyIsImF1ZCI6ImNsaWVudF8wMUpYMURRNVFNUjA0NkE1MjdOQlkwTjBINSIsImV4cCI6MTc1MzIyNTEzMiwiaWF0IjoxNzUzMjI0ODMyLCJlbWFpbCI6ImptYXlub3JAamFtYXlub3IuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJKZXJlbXkgTWF5bm9yIiwiZ2l2ZW5fbmFtZSI6IkplcmVteSIsImZhbWlseV9uYW1lIjoiTWF5bm9yIiwicGljdHVyZSI6Imh0dHBzOi8vd29ya29zY2RuLmNvbS9pbWFnZXMvdjEvWUk5cVJ3OG1sNGZJOHlJUmdYelo6ei4uLiJ9.signature";
+            if (!string.IsNullOrEmpty(idToken))
+            {
+                idTokenClaims = ParseJwtToken(idToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error parsing token claims: {ex.Message}");
+        }
     }
 
-    private void StartEditing()
+    private string ParseJwtToken(string token)
+    {
+        try
+        {
+            var parts = token.Split('.');
+            if (parts.Length != 3) return "Invalid JWT format";
+
+            var payload = parts[1];
+            // Add padding if needed
+            while (payload.Length % 4 != 0)
+            {
+                payload += "=";
+            }
+
+            var jsonBytes = Convert.FromBase64String(payload);
+            var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+            
+            // Pretty format the JSON
+            var jsonDocument = System.Text.Json.JsonDocument.Parse(json);
+            return System.Text.Json.JsonSerializer.Serialize(jsonDocument, new System.Text.Json.JsonSerializerOptions 
+            { 
+                WriteIndented = true 
+            });
+        }
+        catch
+        {
+            return "Unable to parse token";
+        }
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+        catch
+        {
+            // Fallback - could implement alternative copy method
+        }
+    }
+
+    private void StartEdit()
     {
         isEditing = true;
     }
 
-    private async Task SaveChanges()
+    private void CancelEdit()
+    {
+        isEditing = false;
+        // Reset edited profile
+        if (authState.User != null)
+        {
+            editedProfile.FirstName = authState.User.FirstName;
+            editedProfile.LastName = authState.User.LastName;
+        }
+    }
+
+    private async Task SaveProfile()
     {
         isSaving = true;
         try
         {
-            // Here you would call an API to update the user profile
-            // For now, we'll just update the local state
+            // TODO: Implement profile update API call
             await Task.Delay(1000); // Simulate API call
             
-            // Update the user in auth state
-            if (authState.User != null)
+            // Update the auth state with new values
+            var updatedUser = new UserProfile
             {
-                authState.User.FirstName = editedProfile.FirstName;
-                authState.User.LastName = editedProfile.LastName;
-                authState.User.UpdatedAt = DateTime.UtcNow;
-            }
-
+                Id = authState.User!.Id,
+                Email = authState.User.Email,
+                FirstName = editedProfile.FirstName,
+                LastName = editedProfile.LastName,
+                ProfilePictureUrl = authState.User.ProfilePictureUrl,
+                CreatedAt = authState.User.CreatedAt,
+                UpdatedAt = DateTime.UtcNow
+            };
+            
+            await AuthStateService.SetAuthenticatedAsync(updatedUser, authState.AccessToken!, authState.TokenExpiresAt!.Value);
             isEditing = false;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to save changes: {ex.Message}");
-            // Show error message to user
+            Console.WriteLine($"Error saving profile: {ex.Message}");
         }
         finally
         {
@@ -224,23 +411,34 @@
         }
     }
 
-    private void CancelEditing()
+    private void OnOrganizationChange(ChangeEventArgs e)
     {
-        // Reset to original values
-        if (authState.User != null)
+        var selectedOrgId = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(selectedOrgId))
         {
-            editedProfile.FirstName = authState.User.FirstName;
-            editedProfile.LastName = authState.User.LastName;
+            // TODO: Implement organization switch - exchange current token for new organization token
+            Console.WriteLine($"Switching to organization: {selectedOrgId}");
+            
+            // For now, just update the current organization display
+            var selectedOrg = availableOrganizations.FirstOrDefault(o => o.Id == selectedOrgId);
+            if (selectedOrg != null)
+            {
+                currentOrganization = selectedOrg;
+                StateHasChanged();
+            }
         }
-        isEditing = false;
     }
 
-    private void GoBack()
+    private void OnAuthStateChanged()
     {
-        Navigation.NavigateTo("/");
+        InvokeAsync(() =>
+        {
+            authState = AuthStateService.GetAuthState();
+            StateHasChanged();
+        });
     }
 
-    private void GoHome()
+    private void GoToLogin()
     {
         Navigation.NavigateTo("/");
     }
@@ -248,5 +446,11 @@
     public void Dispose()
     {
         AuthStateService.AuthStateChanged -= OnAuthStateChanged;
+    }
+
+    private class Organization
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
     }
 }
